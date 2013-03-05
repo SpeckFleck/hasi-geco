@@ -1,0 +1,1 @@
+./mcchd_wl --width=7. --height=7. --depth=7. --seed=101 --flatness=0.9 --mod_final=1e-20 --mod_multi=0.9 --mod_start=0.001 --energy_limit=400 --sweep_steps=1000000

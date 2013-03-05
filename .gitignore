@@ -1,0 +1,14 @@
+# compile and execution output
+*.o
+*.so
+*.a
+*.d
+gmon.out
+/test/.depend
+
+# binary targets
+/test/test
+/src/mcchd_wl
+
+# results
+/results/
