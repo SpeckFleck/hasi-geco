@@ -10,9 +10,10 @@
  * \author Johannes Knauf
  */
 
-#include <signal.h>
 #include <iostream>
+#include <iomanip>
 #include <fstream>
+#include <limits>
 
 #include <boost/log/trivial.hpp>
 #include <boost/program_options.hpp>
@@ -38,51 +39,13 @@ typedef mcchd::HardDiscs<RngType, ContainerType> ConfigurationType;
 typedef mcchd::Step<RngType, ContainerType> StepType;
 typedef Mocasinns::WangLandau<ConfigurationType, StepType, energy_type, Mocasinns::Histograms::Histocrete, RngType> SimulationType;
 
-static signal_flag_t signal_flags_caught = 0;
 static std::string output_directory;
-
 
 void init_logging()
 {
   // TBD: Log to file + console out
   // TBD: Log levels
   BOOST_LOG_TRIVIAL(info) << "Logging facilities successfully initialized.";
-}
-
-const signal_flag_t flag_SIGUSR1 = 1<<SIGUSR1;
-const signal_flag_t flag_SIGUSR2 = 1<<SIGUSR2;
-const signal_flag_t flag_SIGTERM = 1<<SIGTERM;
-
-static void handle_posix_signal(int signo)
-{
-  if (signo == SIGTERM)
-    {
-      signal_flags_caught |= flag_SIGTERM;
-      BOOST_LOG_TRIVIAL(debug) << "Caught SIGTERM. Flag set.";
-      return;
-    }
-  if (signo == SIGUSR1) 
-    {
-      signal_flags_caught |= flag_SIGUSR1;
-      BOOST_LOG_TRIVIAL(debug) << "Caught SIGUSR1. Flag set.";
-      return;
-    }
-  if (signo == SIGUSR2) 
-    {
-      signal_flags_caught |= flag_SIGUSR2;
-      BOOST_LOG_TRIVIAL(debug) << "Caught SIGUSR2. Flag set.";
-      return;
-    }
-}
-
-static void register_posix_signal_handler()
-{
-  if (signal(SIGTERM, handle_posix_signal) == SIG_ERR)
-    BOOST_LOG_TRIVIAL(error) << "Trapping SIGTERM failed. Continuing.";
-  if (signal(SIGUSR1, handle_posix_signal) == SIG_ERR)
-    BOOST_LOG_TRIVIAL(error) << "Trapping SIGUSR1 failed. Continuing.";
-  if (signal(SIGUSR2, handle_posix_signal) == SIG_ERR)
-    BOOST_LOG_TRIVIAL(error) << "Trapping SIGUSR2 failed. Continuing.";
 }
 
 void write_dos_to_file(std::string output_file, HistogramType& entropy_estimation)
@@ -101,19 +64,21 @@ void write_dos_to_file(std::string output_file, HistogramType& entropy_estimatio
 	  throw 5;
 	}
       
+      (*output_fstream) << std::scientific << std::setprecision(std::numeric_limits<double>::digits10 + 1);
       (*output_fstream) << entropy_estimation << std::endl;
       delete output_fstream;
       BOOST_LOG_TRIVIAL(info) << "Wrote entropy estimate to " << output_file;
     }
 }
 
-void sig_term()
+void handle_sig_usr1(Mocasinns::Simulation<mcchd::HardDiscs<Boost_MT19937, mcchd::CF_Bulk>, Boost_MT19937>* parent_simulation)
 {
-  std::cerr << "No special handling for SIGTERM yet." << std::endl;
-}
+  BOOST_LOG_TRIVIAL(debug) << "Caught SIGUSR1. Writing a snapshot of the entropy estimation";
+  SimulationType* wang_landau_simulation = static_cast<SimulationType*> (parent_simulation);
+  HistogramType entropy_estimation = wang_landau_simulation->get_density_of_states();
+  // normalize histogram before output
+  entropy_estimation.shift_bin_zero(entropy_estimation.min_x_value());
 
-void sig_usr1(HistogramType& entropy_estimation)
-{
   const time_t current_time = time (NULL);
   char world_time[16];
   strftime (world_time, 16, "%Y%m%d-%H%M%S", gmtime(&current_time));
@@ -121,40 +86,25 @@ void sig_usr1(HistogramType& entropy_estimation)
   write_dos_to_file(output_file, entropy_estimation);
 }
 
-void sig_usr2()
+void handle_sig_usr2(Mocasinns::Simulation<mcchd::HardDiscs<Boost_MT19937, mcchd::CF_Bulk>, Boost_MT19937>* parent_simulation)
 {
+  BOOST_LOG_TRIVIAL(debug) << "Caught SIGUSR2. Manually clearing flatness counter. -- not implemented yet";
   // TBD: manually clear flatness counter, make log entry
+  // feature still missing in mocasinns
   std::cerr << "No special handling for SIGUSR2 yet." << std::endl;
 }
 
-// Handler for the main loop, to be connected to Mocasinns' simulation signals
-void between_sweeps_handler(HistogramType& entropy_estimation)
+void handle_sig_term(Mocasinns::Simulation<mcchd::HardDiscs<Boost_MT19937, mcchd::CF_Bulk>, Boost_MT19937>* parent_simulation)
 {
-  // check for caught POSIX signals
-  if (signal_flags_caught & flag_SIGTERM)
-    {
-      signal_flags_caught &= ~flag_SIGTERM;
-      sig_term();
-    }
-  if (signal_flags_caught & flag_SIGUSR1)
-    {
-      signal_flags_caught &= ~flag_SIGUSR1;
-      sig_usr1(entropy_estimation);
-    }
-  if (signal_flags_caught & flag_SIGUSR2)
-    {
-      signal_flags_caught &= ~flag_SIGUSR2;
-      sig_usr2();
-    }
+  BOOST_LOG_TRIVIAL(debug) << "Caught SIGTERM.";
+  BOOST_LOG_TRIVIAL(debug) << "No special handling for SIGTERM yet. Calling SIGUSR1 handler for writing a snapshot before exiting.";
+  handle_sig_usr1(parent_simulation);
 }
-
-void run_simulation(boost_po::variables_map&, std::string&);
 
 void sweep_handler(Mocasinns::Simulation<mcchd::HardDiscs<Boost_MT19937, mcchd::CF_Bulk>, Boost_MT19937>* parent_simulation)
 {
   SimulationType* wang_landau_simulation = static_cast<SimulationType*> (parent_simulation);
-  HistogramType density_of_states = wang_landau_simulation->get_density_of_states();
-  between_sweeps_handler(density_of_states);
+
   BOOST_LOG_TRIVIAL(info) << "Sweep completed with \tt= " << wang_landau_simulation->get_config_space()->get_simulation_time() 
 			  << " \tm= " << wang_landau_simulation->get_modification_factor_actual()
 			  << " \tf= " << wang_landau_simulation->get_incidence_counter().flatness();
@@ -163,16 +113,22 @@ void sweep_handler(Mocasinns::Simulation<mcchd::HardDiscs<Boost_MT19937, mcchd::
 void modfac_handler(Mocasinns::Simulation<mcchd::HardDiscs<Boost_MT19937, mcchd::CF_Bulk>, Boost_MT19937>* parent_simulation)
 {
   SimulationType* wang_landau_simulation = static_cast<SimulationType*> (parent_simulation);
-  HistogramType density_of_states = wang_landau_simulation->get_density_of_states();
   const double current_modification_factor = wang_landau_simulation->get_modification_factor_actual();
+  HistogramType density_of_states = wang_landau_simulation->get_density_of_states();
+
+  // normalize histogram before output
+  density_of_states.shift_bin_zero(density_of_states.min_x_value());
 
   const time_t current_time = time (NULL);
   char world_time[16];
   strftime (world_time, 16, "%Y%m%d-%H%M%S", gmtime(&current_time));
-  std::string output_file = output_directory + "/modfac_entropy_dump," + world_time + ",mod=" + (boost::format("%.0e") % current_modification_factor).str();
+  std::string output_file = output_directory + "/modfac_entropy_dump," + world_time + ",mod=" + (boost::format("%e") % current_modification_factor).str();
 
   write_dos_to_file(output_file, density_of_states);
 }
+
+// declaration of the main simulation routine -- defined below
+void run_simulation(boost_po::variables_map&, std::string&);
 
 int main(int argc, char* argv[])
 {
@@ -256,7 +212,7 @@ void run_simulation(boost_po::variables_map& option_arguments, std::string& prog
     }
   else
     {
-      output_directory = (boost::format("%s,x%.0e,y%.0e,z%.0e,S%d,f%.0e,m%.0e,s%.0e,M%.0e,E%d,N%.0e")
+      output_directory = (boost::format("%s,x%.1e,y%.1e,z%.1e,S%d,f%.1e,m%.1e,s%.1e,M%.1e,E%d,N%.1e")
 			  % program_name.c_str()
 			  % x_max
 			  % y_max
@@ -281,8 +237,6 @@ void run_simulation(boost_po::variables_map& option_arguments, std::string& prog
   boost_fs::create_directory(output_directory.c_str());
   BOOST_LOG_TRIVIAL(debug) << "Created output directory " << output_directory.c_str() << std::endl;
 
-  register_posix_signal_handler();
-
   // create simulation objects
   mcchd::coordinate_type extents = {{x_max, y_max, z_max}};
 
@@ -301,6 +255,9 @@ void run_simulation(boost_po::variables_map& option_arguments, std::string& prog
   wang_landau_simulation->set_random_seed(seed);
   
   // attach watchers
+  wang_landau_simulation->signal_handler_sigusr1.connect(handle_sig_usr1);
+  wang_landau_simulation->signal_handler_sigusr2.connect(handle_sig_usr2);
+  wang_landau_simulation->signal_handler_sigterm.connect(handle_sig_term);
   wang_landau_simulation->signal_handler_sweep.connect(sweep_handler);
   wang_landau_simulation->signal_handler_modfac_change.connect(modfac_handler);
 
