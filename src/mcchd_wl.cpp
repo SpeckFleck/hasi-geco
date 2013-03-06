@@ -106,14 +106,14 @@ void sweep_handler(Mocasinns::Simulation<mcchd::HardDiscs<Boost_MT19937, mcchd::
   SimulationType* wang_landau_simulation = static_cast<SimulationType*> (parent_simulation);
 
   BOOST_LOG_TRIVIAL(info) << "Sweep completed with \tt= " << wang_landau_simulation->get_config_space()->get_simulation_time() 
-			  << " \tm= " << wang_landau_simulation->get_modification_factor_actual()
+			  << " \tm= " << wang_landau_simulation->get_modification_factor_current()
 			  << " \tf= " << wang_landau_simulation->get_incidence_counter().flatness();
 }
 
 void modfac_handler(Mocasinns::Simulation<mcchd::HardDiscs<Boost_MT19937, mcchd::CF_Bulk>, Boost_MT19937>* parent_simulation)
 {
   SimulationType* wang_landau_simulation = static_cast<SimulationType*> (parent_simulation);
-  const double current_modification_factor = wang_landau_simulation->get_modification_factor_actual();
+  const double current_modification_factor = wang_landau_simulation->get_modification_factor_current();
   HistogramType density_of_states = wang_landau_simulation->get_density_of_states();
 
   // normalize histogram before output

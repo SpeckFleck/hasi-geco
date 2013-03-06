@@ -1,7 +1,7 @@
 CC = gcc
 CXX = g++
 
-MOCASINNS_ROOT = ../../mymocasinns
+MOCASINNS_ROOT = ../../mocasinns
 MOCASINNS_INCLUDE =  -I$(MOCASINNS_ROOT)/libmocasinns/include
 MOCASINNS_RANDOM_INCLUDE = -I$(MOCASINNS_ROOT)/librandom/include
 MOCASINNS_RANDOM_LIB = -L$(MOCASINNS_ROOT)/librandom/lib

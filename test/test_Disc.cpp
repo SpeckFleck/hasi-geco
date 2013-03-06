@@ -1,7 +1,7 @@
 // -*- coding: utf-8; -*-
 /*!
  * 
- * \file test_disc.cpp
+ * \file test_Disc.cpp
  * \brief Unit Tests for mcchd::Disc
  * 
  * Contains the tests for
