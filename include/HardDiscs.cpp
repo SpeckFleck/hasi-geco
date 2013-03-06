@@ -113,8 +113,8 @@ namespace mcchd
       }
     else
       {
-	const disc_id_type random_disc = rng->random_uint32(0, num_present);
-	return Step<RandomNumberGenerator, CollisionFunctor>(this, random_disc);
+	const disc_id_type random_disc = rng->random_uint32(0, num_present ? num_present - 1 : 0); // num_present - 1 is included
+	return Step<RandomNumberGenerator, CollisionFunctor>(this, random_disc); // remove constructor
       }
   }
 

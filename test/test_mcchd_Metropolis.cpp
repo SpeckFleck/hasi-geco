@@ -25,10 +25,7 @@ CppUnit::Test* TestMCCHDMetropolis::suite()
 
 void TestMCCHDMetropolis::setUp()
 {
-  mcchd::coordinate_type extents;
-  extents[0] = 5.;
-  extents[1] = 5.;
-  extents[2] = 5.;
+  mcchd::coordinate_type extents = {{5., 5., 5.}};
   SimulationType::Parameters parameters;
   test_configuration = new ConfigurationType(extents);
   test_simulation = new SimulationType(parameters, test_configuration);

@@ -24,9 +24,7 @@ namespace mcchd {
 
   const int dimensions = 3;
 
-  typedef std::array<Disc*, 8> Cell;
-  typedef boost::multi_array<Cell, dimensions> Cells3D;
-  typedef std::vector<const Cell*> CellVec;
+  typedef boost::multi_array<Disc*, dimensions> Cells3D;
   typedef std::vector<const Disc*> DiscVec;
   typedef boost::multi_array_types::size_type index_type;
   typedef std::array<index_type, dimensions> multi_index_type;
@@ -40,7 +38,6 @@ namespace mcchd {
     Cells3D* space_cells;
 
     multi_index_type get_cell_idx(const Point&) const;
-    CellVec get_surrounding_cells(const Point&) const;
   public:
     LookupTable();
     LookupTable(const coordinate_type&);
