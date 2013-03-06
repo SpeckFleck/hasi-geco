@@ -22,12 +22,14 @@
 
 namespace mcchd {
 
+  const int dimensions = 3;
+
   typedef std::array<Disc*, 8> Cell;
-  typedef boost::multi_array<Cell, 3> Cells3D;
+  typedef boost::multi_array<Cell, dimensions> Cells3D;
   typedef std::vector<const Cell*> CellVec;
   typedef std::vector<const Disc*> DiscVec;
   typedef boost::multi_array_types::size_type index_type;
-  typedef std::array<index_type, 3> multi_index_type;
+  typedef std::array<index_type, dimensions> multi_index_type;
 
   class LookupTable
   {
