@@ -53,9 +53,19 @@ namespace mcchd {
     return this->center.distance(other_disc.center);
   }
 
+  inline double Disc::distance(const Disc& other_disc, const coordinate_type& extents) const
+  {
+    return this->center.distance(other_disc.center, extents);
+  }
+
   inline bool Disc::is_overlapping(const Disc& other_disc) const
   {
     return distance(other_disc) < (this->radius + other_disc.radius);
+  }
+
+  inline bool Disc::is_overlapping(const Disc& other_disc, const coordinate_type& extents) const
+  {
+    return distance(other_disc, extents) < (this->radius + other_disc.radius);
   }
 
   inline bool Disc::operator==(const Disc& other_disc) const

@@ -44,7 +44,7 @@ void TestPoint::test_distance()
   mcchd::Point new_point = mcchd::Point(3, 2, 1);
   CPPUNIT_ASSERT(new_point != origin);
   CPPUNIT_ASSERT(new_point-new_point == origin);
-  CPPUNIT_ASSERT(new_point.abs() == sqrt(pow(3.0, 2) + pow(2.0, 2) + pow(1.0, 2)));
+  CPPUNIT_ASSERT(new_point.absolute() == sqrt(pow(3.0, 2) + pow(2.0, 2) + pow(1.0, 2)));
 }
 
 void TestPoint::test_random()

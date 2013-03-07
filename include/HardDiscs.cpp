@@ -92,7 +92,7 @@ namespace mcchd
     DiscVec neighbouring_discs = disc_table.get_neighbouring_discs(test_disc.get_center());
     for (DiscVec::const_iterator neighbour_cit = neighbouring_discs.begin(); neighbour_cit != neighbouring_discs.end(); neighbour_cit++)
       {
-	if ((*neighbour_cit)->is_overlapping(test_disc))
+	if ((*neighbour_cit)->is_overlapping(test_disc, extents))
 	  {
 	    collides_with_other_disc = true;
 	    break;

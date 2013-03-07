@@ -33,7 +33,9 @@ namespace mcchd {
     const Point& get_center() const;
     void translate_to(const Point&);
     double distance(const Disc&) const;
+    double distance(const Disc&, const coordinate_type&) const;
     bool is_overlapping(const Disc&) const;
+    bool is_overlapping(const Disc&, const coordinate_type&) const;
     bool operator==(const Disc&) const;
     bool operator!=(const Disc&) const;
   };

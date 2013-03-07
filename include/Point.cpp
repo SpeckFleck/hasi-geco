@@ -62,16 +62,33 @@ namespace mcchd {
   }
 
   template <class RandomNumberGenerator>
-  double Point_3d<RandomNumberGenerator>::abs() const
+  double Point_3d<RandomNumberGenerator>::absolute() const
   {
     return sqrt(coors[0]*coors[0] + coors[1]*coors[1] + coors[2]*coors[2]);
   }
   
-  // TBD: distance in periodic space
   template <class RandomNumberGenerator>
   double Point_3d<RandomNumberGenerator>::distance(const Point_3d<RandomNumberGenerator>& other_point) const
   {
-    return (other_point - (*this)).abs();
+    return (other_point - (*this)).absolute();
+  }
+
+  template <class RandomNumberGenerator>
+  double Point_3d<RandomNumberGenerator>::distance(const Point_3d<RandomNumberGenerator>& other_point, const coordinate_type& extents) const
+  {
+    const double x_center = extents[0]/2.;
+    const double d_x = abs(other_point.coors[0] - coors[0]);
+    const double d_x_pbc = d_x < x_center ? d_x : x_center - d_x;
+
+    const double y_center = extents[1]/2.;
+    const double d_y = abs(other_point.coors[1] - coors[1]);
+    const double d_y_pbc = d_y < y_center ? d_y : y_center - d_y;
+
+    const double z_center = extents[2]/2.;
+    const double d_z = abs(other_point.coors[2] - coors[2]);
+    const double d_z_pbc = d_z < z_center ? d_z : z_center - d_z;
+
+    return sqrt(d_x_pbc*d_x_pbc + d_y_pbc*d_y_pbc + d_z_pbc*d_z_pbc);
   }
   
   template <class RandomNumberGenerator>

@@ -29,8 +29,9 @@ namespace mcchd {
     ~Point_3d();
     double get_coor(const uint8_t&) const;
     void set_coor(const uint8_t&, const double&);
-    double abs() const;
+    double absolute() const;
     double distance(const Point_3d<RandomNumberGenerator>&) const;
+    double distance(const Point_3d<RandomNumberGenerator>&, const coordinate_type&) const;
     Point_3d<RandomNumberGenerator> operator-(const Point_3d<RandomNumberGenerator>&) const;
     bool operator==(const Point_3d<RandomNumberGenerator>&) const;
     bool operator!=(const Point_3d<RandomNumberGenerator>&) const;
