@@ -87,11 +87,12 @@ namespace mcchd
   {
     const disc_id_type num_discs = hard_disc_configuration_space->get_number_of_discs();
     const double volume = hard_disc_configuration_space->get_volume();
+    const double thermal_wavelength_pow_3 = 1.;
 
     if (is_remove)
-      return volume / static_cast<double> (num_discs+1);
+      return volume * thermal_wavelength_pow_3 / static_cast<double> (num_discs);
     else
-      return static_cast<double> (num_discs) / volume;
+      return static_cast<double> (num_discs+1) / volume / thermal_wavelength_pow_3;
   }
 
 
