@@ -37,6 +37,7 @@ typedef mcchd::CF_Bulk ContainerType;
 typedef Mocasinns::Histograms::Histocrete<energy_type, double> HistogramType;
 typedef mcchd::HardDiscs<RngType, ContainerType> ConfigurationType;
 typedef mcchd::Step<RngType, ContainerType> StepType;
+typedef Mocasinns::Simulation<ConfigurationType, RngType> ParentSimulationType;
 typedef Mocasinns::WangLandau<ConfigurationType, StepType, energy_type, Mocasinns::Histograms::Histocrete, RngType> SimulationType;
 
 static std::string output_directory;
@@ -71,7 +72,7 @@ void write_dos_to_file(std::string output_file, HistogramType& entropy_estimatio
     }
 }
 
-void handle_sig_usr1(Mocasinns::Simulation<mcchd::HardDiscs<Boost_MT19937, mcchd::CF_Bulk>, Boost_MT19937>* parent_simulation)
+void handle_sig_usr1(ParentSimulationType* parent_simulation)
 {
   BOOST_LOG_TRIVIAL(debug) << "Caught SIGUSR1. Writing a snapshot of the entropy estimation";
   SimulationType* wang_landau_simulation = static_cast<SimulationType*> (parent_simulation);
@@ -86,7 +87,7 @@ void handle_sig_usr1(Mocasinns::Simulation<mcchd::HardDiscs<Boost_MT19937, mcchd
   write_dos_to_file(output_file, entropy_estimation);
 }
 
-void handle_sig_usr2(Mocasinns::Simulation<mcchd::HardDiscs<Boost_MT19937, mcchd::CF_Bulk>, Boost_MT19937>* parent_simulation)
+void handle_sig_usr2(ParentSimulationType* parent_simulation)
 {
   BOOST_LOG_TRIVIAL(debug) << "Caught SIGUSR2. Manually clearing flatness counter. -- not implemented yet";
   // TBD: manually clear flatness counter, make log entry
@@ -94,14 +95,14 @@ void handle_sig_usr2(Mocasinns::Simulation<mcchd::HardDiscs<Boost_MT19937, mcchd
   std::cerr << "No special handling for SIGUSR2 yet." << std::endl;
 }
 
-void handle_sig_term(Mocasinns::Simulation<mcchd::HardDiscs<Boost_MT19937, mcchd::CF_Bulk>, Boost_MT19937>* parent_simulation)
+void handle_sig_term(ParentSimulationType* parent_simulation)
 {
   BOOST_LOG_TRIVIAL(debug) << "Caught SIGTERM.";
   BOOST_LOG_TRIVIAL(debug) << "No special handling for SIGTERM yet. Calling SIGUSR1 handler for writing a snapshot before exiting.";
   handle_sig_usr1(parent_simulation);
 }
 
-void sweep_handler(Mocasinns::Simulation<mcchd::HardDiscs<Boost_MT19937, mcchd::CF_Bulk>, Boost_MT19937>* parent_simulation)
+void sweep_handler(ParentSimulationType* parent_simulation)
 {
   SimulationType* wang_landau_simulation = static_cast<SimulationType*> (parent_simulation);
 
@@ -110,7 +111,7 @@ void sweep_handler(Mocasinns::Simulation<mcchd::HardDiscs<Boost_MT19937, mcchd::
 			  << " \tf= " << wang_landau_simulation->get_incidence_counter().flatness();
 }
 
-void modfac_handler(Mocasinns::Simulation<mcchd::HardDiscs<Boost_MT19937, mcchd::CF_Bulk>, Boost_MT19937>* parent_simulation)
+void modfac_handler(ParentSimulationType* parent_simulation)
 {
   SimulationType* wang_landau_simulation = static_cast<SimulationType*> (parent_simulation);
   const double current_modification_factor = wang_landau_simulation->get_modification_factor_current();

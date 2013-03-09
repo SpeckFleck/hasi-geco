@@ -45,13 +45,11 @@ void TestLookupTable::test_get_neighbours()
   CPPUNIT_ASSERT(neighbours.size() == 3);
   mcchd::DiscVec::const_iterator neighbour_cit = neighbours.begin();   // order not principally fixed, test should be changed correspondingly later
 
-
-  CPPUNIT_ASSERT((*neighbour_cit)->get_center().get_coor(0) == 0.8);
+  CPPUNIT_ASSERT((*neighbour_cit)->get_center() == mcchd::Point(0.8,1.4,4) || (*neighbour_cit)->get_center() == mcchd::Point(1.8,1.4,4) || (*neighbour_cit)->get_center() == mcchd::Point(1,1,1) || (*neighbour_cit)->get_center() == mcchd::Point(1,2,4));
   neighbour_cit++;
-  CPPUNIT_ASSERT((*neighbour_cit)->get_center().get_coor(0) == 1.8);
+  CPPUNIT_ASSERT((*neighbour_cit)->get_center() == mcchd::Point(0.8,1.4,4) || (*neighbour_cit)->get_center() == mcchd::Point(1.8,1.4,4) || (*neighbour_cit)->get_center() == mcchd::Point(1,1,1) || (*neighbour_cit)->get_center() == mcchd::Point(1,2,4));
   neighbour_cit++;
-  CPPUNIT_ASSERT((*neighbour_cit)->get_center().get_coor(0) == 1);
-  CPPUNIT_ASSERT((*neighbour_cit)->is_overlapping(mcchd::Disc(mcchd::Point(1.1,2.1,4.1), 6)));
+  CPPUNIT_ASSERT((*neighbour_cit)->get_center() == mcchd::Point(0.8,1.4,4) || (*neighbour_cit)->get_center() == mcchd::Point(1.8,1.4,4) || (*neighbour_cit)->get_center() == mcchd::Point(1,1,1) || (*neighbour_cit)->get_center() == mcchd::Point(1,2,4));
   neighbour_cit++;
   CPPUNIT_ASSERT(neighbour_cit == neighbours.end());
 }

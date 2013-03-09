@@ -52,7 +52,7 @@ void TestMCCHDMetropolis::test_metropolis()
     sum += test_simulation->get_config_space()->energy();
   }
   peak = sum / static_cast<double> (n);
-  CPPUNIT_ASSERT(1. < peak && peak < 2.); 
+  CPPUNIT_ASSERT(2.0 < peak && peak < 3.0); 
 
   // part 2: beta = -4
   sum = 0;
@@ -64,7 +64,7 @@ void TestMCCHDMetropolis::test_metropolis()
     sum += test_simulation->get_config_space()->energy();
   }
   peak = sum / static_cast<double> (n);
-  CPPUNIT_ASSERT(90. < peak); 
+  CPPUNIT_ASSERT(70. < peak); 
 
   // part 3: beta = 0
   sum = 0;
@@ -76,7 +76,5 @@ void TestMCCHDMetropolis::test_metropolis()
     sum += test_simulation->get_config_space()->energy();
   }
   peak = sum / static_cast<double> (n);
-  CPPUNIT_ASSERT(30. < peak && peak < 35.);
-
-
+  CPPUNIT_ASSERT(35. < peak && peak < 38.);
 }

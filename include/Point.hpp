@@ -11,11 +11,11 @@
 #define POINT_HPP
 
 #include <random_boost_mt19937.hpp>
-#include <array>
+#include <boost/array.hpp>
 
 namespace mcchd {
 
-  typedef std::array<double, 3> coordinate_type;
+  typedef boost::array<double, 3> coordinate_type;
 
   template <class RandomNumberGenerator = Boost_MT19937>
   class Point_3d {

@@ -25,7 +25,6 @@ class TestHardDiscs : CppUnit::TestFixture
 {
 private:
   mcchd::HardDiscs<Boost_MT19937, mcchd::CF_PointDefect>* hard_disc_configuration;
-  Boost_MT19937 rng;
 public:
   static CppUnit::Test* suite();
   

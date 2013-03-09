@@ -42,56 +42,57 @@ void TestMCCHDWangLandau::setUp()
   test_simulation = new SimulationType(parameters, test_configuration);
 
   // result_comparison was generated with seed 3, 1e-1 -- 1e-15, *0.5, =0.6, #10000, Emax 50
-  result_comparison.push_back(0.0000000000000000e+00);
-  result_comparison.push_back(4.6152914520008856e+00);
-  result_comparison.push_back(8.8239636740803480e+00);
-  result_comparison.push_back(1.2735492260557022e+01);
-  result_comparison.push_back(1.6423658619065890e+01);
-  result_comparison.push_back(1.9912805404148749e+01);
-  result_comparison.push_back(2.3260657602133968e+01);
-  result_comparison.push_back(2.6458534091402676e+01);
-  result_comparison.push_back(2.9560732222938508e+01);
-  result_comparison.push_back(3.2546972892416584e+01);
-  result_comparison.push_back(3.5431779471969080e+01);
-  result_comparison.push_back(3.8227801695839744e+01);
-  result_comparison.push_back(4.0935835561060287e+01);
-  result_comparison.push_back(4.3575382815551976e+01);
-  result_comparison.push_back(4.6135974744085026e+01);
-  result_comparison.push_back(4.8655317141349563e+01);
-  result_comparison.push_back(5.1129437095592138e+01);
-  result_comparison.push_back(5.3528513350136386e+01);
-  result_comparison.push_back(5.5899008651299262e+01);
-  result_comparison.push_back(5.8203911795067064e+01);
-  result_comparison.push_back(6.0469779127105312e+01);
-  result_comparison.push_back(6.2679587310819642e+01);
-  result_comparison.push_back(6.4866416406440365e+01);
-  result_comparison.push_back(6.6961457398759450e+01);
-  result_comparison.push_back(6.9034284954445368e+01);
-  result_comparison.push_back(7.1073443543054751e+01);
-  result_comparison.push_back(7.3054959006508028e+01);
-  result_comparison.push_back(7.5007953910187865e+01);
-  result_comparison.push_back(7.6937998218692499e+01);
-  result_comparison.push_back(7.8856180284710106e+01);
-  result_comparison.push_back(8.0720388074807587e+01);
-  result_comparison.push_back(8.2523713925569538e+01);
-  result_comparison.push_back(8.4295716401082615e+01);
-  result_comparison.push_back(8.6031212926867084e+01);
-  result_comparison.push_back(8.7719895211324669e+01);
-  result_comparison.push_back(8.9415482249580108e+01);
-  result_comparison.push_back(9.1080095274136823e+01);
-  result_comparison.push_back(9.2706593796027164e+01);
-  result_comparison.push_back(9.4316606492931840e+01);
-  result_comparison.push_back(9.5923420019937225e+01);
-  result_comparison.push_back(9.7503896903153304e+01);
-  result_comparison.push_back(9.9046288477726051e+01);
-  result_comparison.push_back(1.0056083315351182e+02);
-  result_comparison.push_back(1.0207284812213612e+02);
-  result_comparison.push_back(1.0354830096562603e+02);
-  result_comparison.push_back(1.0503056706067954e+02);
-  result_comparison.push_back(1.0645645234099898e+02);
-  result_comparison.push_back(1.0786378619241178e+02);
-  result_comparison.push_back(1.0925493457717842e+02);
-  result_comparison.push_back(1.1063152798144056e+02);
+
+  result_comparison.push_back(0.);
+  result_comparison.push_back(5.8161450778);
+  result_comparison.push_back(10.9645807891);
+  result_comparison.push_back(15.6774090969);
+  result_comparison.push_back(20.0836287873);
+  result_comparison.push_back(24.2419137538);
+  result_comparison.push_back(28.2213670391);
+  result_comparison.push_back(32.0682601872);
+  result_comparison.push_back(35.7351328159);
+  result_comparison.push_back(39.2550447199);
+  result_comparison.push_back(42.6762485371);
+  result_comparison.push_back(45.9880698046);
+  result_comparison.push_back(49.1824641821);
+  result_comparison.push_back(52.3407976914);
+  result_comparison.push_back(55.3997966365);
+  result_comparison.push_back(58.3750841805);
+  result_comparison.push_back(61.3025355308);
+  result_comparison.push_back(64.1229665466);
+  result_comparison.push_back(66.9205122412);
+  result_comparison.push_back(69.6239927783);
+  result_comparison.push_back(72.2803025334);
+  result_comparison.push_back(74.8819081520);
+  result_comparison.push_back(77.4159496799);
+  result_comparison.push_back(79.8961693695);
+  result_comparison.push_back(82.2581928733);
+  result_comparison.push_back(84.5878395027);
+  result_comparison.push_back(86.8268693738);
+  result_comparison.push_back(89.0133738344);
+  result_comparison.push_back(91.2358822773);
+  result_comparison.push_back(93.4233038661);
+  result_comparison.push_back(95.4951959444);
+  result_comparison.push_back(97.5395612873);
+  result_comparison.push_back(99.5403010390);
+  result_comparison.push_back(101.5314208484);
+  result_comparison.push_back(103.4812032490);
+  result_comparison.push_back(105.3645230600);
+  result_comparison.push_back(107.2281394981);
+  result_comparison.push_back(108.9713942638);
+  result_comparison.push_back(110.7404431370);
+  result_comparison.push_back(112.4409571830);
+  result_comparison.push_back(114.1288963390);
+  result_comparison.push_back(115.7544466482);
+  result_comparison.push_back(117.3240312907);
+  result_comparison.push_back(118.8680843827);
+  result_comparison.push_back(120.4425030774);
+  result_comparison.push_back(121.9558394229);
+  result_comparison.push_back(123.4521269076);
+  result_comparison.push_back(124.9035888135);
+  result_comparison.push_back(126.3272075438);
+  result_comparison.push_back(127.6865595775);
 }
 
 void TestMCCHDWangLandau::tearDown()
@@ -112,6 +113,7 @@ void TestMCCHDWangLandau::test_wanglandau()
       const energy_type energy = (*ent_it).first;
       const double entropy = (*ent_it).second;
       const double expected = result_comparison[energy];
+      //std::cout << std::setprecision(100) << entropy << std::endl;
       CPPUNIT_ASSERT((expected == 0. && entropy == 0.) || (abs(entropy - expected) < expected/1000.)); // test if precise to +- 0.1%
     }
 }

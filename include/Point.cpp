@@ -11,6 +11,7 @@
 #ifdef POINT_HPP
 
 #include <cmath>
+#include <algorithm>
 
 namespace mcchd {
 
@@ -76,17 +77,17 @@ namespace mcchd {
   template <class RandomNumberGenerator>
   double Point_3d<RandomNumberGenerator>::distance(const Point_3d<RandomNumberGenerator>& other_point, const coordinate_type& extents) const
   {
-    const double x_center = extents[0]/2.;
-    const double d_x = abs(other_point.coors[0] - coors[0]);
-    const double d_x_pbc = d_x < x_center ? d_x : x_center - d_x;
+    const double d_x = fabs(other_point.coors[0] - coors[0]);
+    const double d_x_alt = extents[0] - d_x;
+    const double d_x_pbc = std::min(d_x, d_x_alt);
 
-    const double y_center = extents[1]/2.;
-    const double d_y = abs(other_point.coors[1] - coors[1]);
-    const double d_y_pbc = d_y < y_center ? d_y : y_center - d_y;
+    const double d_y = fabs(other_point.coors[1] - coors[1]);
+    const double d_y_alt = extents[1] - d_y;
+    const double d_y_pbc = std::min(d_y, d_y_alt);
 
-    const double z_center = extents[2]/2.;
-    const double d_z = abs(other_point.coors[2] - coors[2]);
-    const double d_z_pbc = d_z < z_center ? d_z : z_center - d_z;
+    const double d_z = fabs(other_point.coors[2] - coors[2]);
+    const double d_z_alt = extents[2] - d_z;
+    const double d_z_pbc = std::min(d_z, d_z_alt);
 
     return sqrt(d_x_pbc*d_x_pbc + d_y_pbc*d_y_pbc + d_z_pbc*d_z_pbc);
   }

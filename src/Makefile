@@ -6,7 +6,7 @@ MOCASINNS_INCLUDE =  -I$(MOCASINNS_ROOT)/libmocasinns/include
 MOCASINNS_RANDOM_INCLUDE = -I$(MOCASINNS_ROOT)/librandom/include
 MOCASINNS_RANDOM_LIB = -L$(MOCASINNS_ROOT)/librandom/lib
 
-CFLAGS_DEBUG = -g -pg
+CFLAGS_DEBUG = #-ggdb3 -pg
 CFLAGS_PREFERENCES = -std=gnu++0x -mfpmath=sse
 CFLAGS_OPTIMIZATION = -O3 -march=native
 CFLAGS_WARNINGS = -Wall -Wextra -pedantic
@@ -34,4 +34,4 @@ mcchd_wl: $(MCCHD_WL_OBJECTS)
 	$(CXX) $(CFLAGS) -MM -MF $*.d $<
 
 clean:
-	rm -f *.o *.d test
+	rm -f *.o *.d mcchd_wl
