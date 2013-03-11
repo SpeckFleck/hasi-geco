@@ -17,11 +17,17 @@
 #include <cppunit/TestSuite.h>
 #include <cppunit/Test.h>
 
+#include <vector>
+
 #include <LookupTable.hpp>
+#include <Disc.hpp>
+
 
 class TestLookupTable : CppUnit::TestFixture
 {
+  typedef std::vector<mcchd::Disc*> DiscPtrVec;
 private:
+  DiscPtrVec test_discs;
   mcchd::LookupTable *disc_table;
 public:
   static CppUnit::Test* suite();
