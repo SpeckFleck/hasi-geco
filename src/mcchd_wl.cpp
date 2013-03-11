@@ -30,10 +30,20 @@ namespace boost_po = boost::program_options;
 namespace boost_fs = boost::filesystem;
 namespace boost_log = boost::log;
 
+#ifndef CONTAINER_NAME
+#define CONTAINER_NAME Bulk
+#endif
+
+// double layering of definitions is necessary because of c preprocessor replacement rules
+#define PASTER(x,y) x ## _ ## y
+#define EVALUATOR(x,y) PASTER(x,y)
+#define CONTAINER_TYPE EVALUATOR(mcchd::CF, CONTAINER_NAME)
+
+
 typedef uint64_t signal_flag_t;
 typedef mcchd::disc_id_type energy_type;
 typedef Boost_MT19937 RngType;
-typedef mcchd::CF_Bulk ContainerType;
+typedef CONTAINER_TYPE ContainerType;
 typedef Mocasinns::Histograms::Histocrete<energy_type, double> HistogramType;
 typedef mcchd::HardDiscs<RngType, ContainerType> ConfigurationType;
 typedef mcchd::Step<RngType, ContainerType> StepType;
