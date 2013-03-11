@@ -12,3 +12,6 @@ gmon.out
 
 # results
 /results/
+
+# intermediate results from test runs
+/src/mcchd_wl*/
