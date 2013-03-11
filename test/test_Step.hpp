@@ -24,7 +24,7 @@
 class TestStep : CppUnit::TestFixture
 {
 private:
-  mcchd::HardDiscs<Boost_MT19937, mcchd::CF_PointDefect>* hard_disc_configuration;
+  mcchd::HardDiscs<Boost_MT19937, mcchd::CF_Bulk>* hard_disc_configuration;
   Boost_MT19937 rng;
 public:
   static CppUnit::Test* suite();

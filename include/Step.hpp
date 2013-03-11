@@ -26,6 +26,7 @@ namespace mcchd
 
   template <class, class> class HardDiscs;
   typedef uint64_t simulation_time_type;
+  typedef int energy_type;
 
   template<class RandomNumberGenerator, class CollisionFunctor>
   class Step {
@@ -42,7 +43,7 @@ namespace mcchd
     Disc get_old_spin() const;
     Disc get_new_spin() const;
     int get_creation_simulation_time() const;
-    int delta_E() const;
+    energy_type delta_E() const;
     bool is_executable() const;
     bool is_remove_step() const;
     void execute();

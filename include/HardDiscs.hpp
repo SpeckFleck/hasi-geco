@@ -54,7 +54,7 @@ namespace mcchd {
     ~HardDiscs();
     const disc_id_type& get_number_of_discs() const;
     coordinate_type get_extents() const;
-    double energy() const;
+    energy_type energy() const;
     const time_type& get_simulation_time() const;
     const double& get_volume() const;
     bool is_overlapping(const Disc&);

@@ -63,7 +63,7 @@ namespace mcchd
   }
 
   template<class RandomNumberGenerator, class CollisionFunctor>
-  double HardDiscs<RandomNumberGenerator, CollisionFunctor>::energy() const
+  energy_type HardDiscs<RandomNumberGenerator, CollisionFunctor>::energy() const
   {
     return num_present;
   }  

@@ -29,7 +29,7 @@ void TestStep::setUp()
   extents[1] = 5.;
   extents[2] = 5.;
 
-  hard_disc_configuration = new mcchd::HardDiscs<Boost_MT19937, mcchd::CF_PointDefect>(extents);
+  hard_disc_configuration = new mcchd::HardDiscs<Boost_MT19937, mcchd::CF_Bulk>(extents);
 }
 
 void TestStep::tearDown()
@@ -39,5 +39,54 @@ void TestStep::tearDown()
 
 void TestStep::test_execute()
 {
-  mcchd::Step<Boost_MT19937, mcchd::CF_PointDefect> test_step();
+  Boost_MT19937 rng;
+
+  bool tested_failing_insert_at_least_once = false;
+  bool tested_successful_insert_at_least_once = false;
+  bool tested_failing_remove_at_least_once = false;
+  bool tested_successful_remove_at_least_once = false;
+
+  for (uint32_t i = 0; i < 10000; i++)
+    {
+      mcchd::Step<Boost_MT19937, mcchd::CF_Bulk> random_step = hard_disc_configuration->propose_step(&rng);
+
+      const mcchd::energy_type energy_before = hard_disc_configuration->energy();
+      const mcchd::energy_type energy_change = random_step.delta_E();
+      CPPUNIT_ASSERT(energy_change == 1 || energy_change == -1);
+
+      if (random_step.is_executable())
+	{
+	  if (random_step.is_remove_step())
+	    {
+	      tested_successful_remove_at_least_once = true;
+	    }
+	  else
+	    {
+	      tested_successful_insert_at_least_once = true;
+	    }
+
+	  random_step.execute();
+	  const mcchd::energy_type energy_after = hard_disc_configuration->energy();
+	  CPPUNIT_ASSERT(energy_before + energy_change == energy_after);
+	}
+      else
+	{
+	  if (random_step.is_remove_step())
+	    {
+	      CPPUNIT_ASSERT(hard_disc_configuration->get_number_of_discs() == 0);
+	      tested_failing_remove_at_least_once = true;
+	    }
+	  else
+	    {
+	      CPPUNIT_ASSERT(hard_disc_configuration->get_number_of_discs() > 0);
+	      tested_failing_insert_at_least_once = true;
+	    }
+	}
+
+    }
+
+  CPPUNIT_ASSERT(tested_failing_insert_at_least_once && 
+		 tested_successful_insert_at_least_once && 
+		 tested_failing_remove_at_least_once && 
+		 tested_successful_remove_at_least_once);
 }
