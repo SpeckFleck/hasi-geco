@@ -14,6 +14,7 @@
 #include <iomanip>
 #include <fstream>
 #include <limits>
+#include <cstdlib>
 
 #include <boost/log/trivial.hpp>
 #include <boost/program_options.hpp>
@@ -44,6 +45,7 @@ typedef uint64_t signal_flag_t;
 typedef mcchd::disc_id_type energy_type;
 typedef Boost_MT19937 RngType;
 typedef CONTAINER_TYPE ContainerType;
+typedef Mocasinns::Histograms::Histocrete<energy_type, long long int> IncidenceHistogramType;
 typedef Mocasinns::Histograms::Histocrete<energy_type, double> HistogramType;
 typedef mcchd::HardDiscs<RngType, ContainerType> ConfigurationType;
 typedef mcchd::Step<RngType, ContainerType> StepType;
@@ -99,10 +101,12 @@ void handle_sig_usr1(ParentSimulationType* parent_simulation)
 
 void handle_sig_usr2(ParentSimulationType* parent_simulation)
 {
-  BOOST_LOG_TRIVIAL(debug) << "Caught SIGUSR2. Manually clearing flatness counter. -- not implemented yet";
-  // TBD: manually clear flatness counter, make log entry
-  // feature still missing in mocasinns
-  std::cerr << "No special handling for SIGUSR2 yet." << std::endl;
+  BOOST_LOG_TRIVIAL(debug) << "Caught SIGUSR2. Manually clearing flatness counter.";
+  SimulationType* wang_landau_simulation = static_cast<SimulationType*> (parent_simulation);
+  IncidenceHistogramType incidence_counter = wang_landau_simulation->get_incidence_counter();
+
+  incidence_counter.set_all_y_values(0);
+  wang_landau_simulation->set_incidence_counter(incidence_counter);
 }
 
 void handle_sig_term(ParentSimulationType* parent_simulation)
@@ -110,6 +114,7 @@ void handle_sig_term(ParentSimulationType* parent_simulation)
   BOOST_LOG_TRIVIAL(debug) << "Caught SIGTERM.";
   BOOST_LOG_TRIVIAL(debug) << "No special handling for SIGTERM yet. Calling SIGUSR1 handler for writing a snapshot before exiting.";
   handle_sig_usr1(parent_simulation);
+  exit(2);
 }
 
 void sweep_handler(ParentSimulationType* parent_simulation)
