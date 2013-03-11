@@ -18,16 +18,24 @@
 #include <cppunit/Test.h>
 
 #include <CollisionFunctor_SingularDefects.hpp>
+#include <Disc.hpp>
 
 class TestCFSingularDefects : CppUnit::TestFixture
 {
 private:
+  mcchd::coordinate_type extents;
+
+  mcchd::Disc collides_with_point_line_plane;
+  mcchd::Disc collides_with_line_plane;
+  mcchd::Disc collides_with_plane;
+  mcchd::Disc collides_with_nothing;
 public:
   static CppUnit::Test* suite();
 
   void setUp();
   void tearDown();
 
+  void test_collision_bulk();
   void test_collision_point();
   void test_collision_line();
   void test_collision_plane();
