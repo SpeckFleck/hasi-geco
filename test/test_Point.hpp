@@ -23,7 +23,7 @@ class TestPoint : CppUnit::TestFixture
 {
 private:
   mcchd::Point* test_point;
-
+  mcchd::coordinate_type extents;
 public:
   static CppUnit::Test* suite();
   

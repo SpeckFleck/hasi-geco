@@ -29,10 +29,15 @@ CppUnit::Test* TestDisc::suite()
 
 void TestDisc::setUp()
 {
+  const mcchd::coordinate_type new_extents = {{4., 6., 3.}};
+  extents = new_extents;
+
   origin = mcchd::Disc(0);
   to_move = mcchd::Disc(1);
   overlaps_origin = mcchd::Disc(mcchd::Point(0.5, 0.5, 0.5), 2);
   does_not_overlap_origin = mcchd::Disc(mcchd::Point(2, 5, 0), 3);
+  shifted_origin = mcchd::Disc(mcchd::Point(extents), 4);
+  overlaps_origin_only_when_pbc = mcchd::Disc(mcchd::Point(3.8, 5.8, 2.8), 5);
 }
 
 void TestDisc::tearDown()
@@ -47,6 +52,10 @@ void TestDisc::test_distance()
   CPPUNIT_ASSERT(origin.distance(overlaps_origin) == overlaps_origin.distance(origin)); // symmetry
   CPPUNIT_ASSERT(origin.distance(does_not_overlap_origin) == sqrt(2.*2. + 5.*5. + 0.)); // function itself
   CPPUNIT_ASSERT(origin.distance(does_not_overlap_origin) == does_not_overlap_origin.distance(origin)); // symmetry
+  // non-PBC
+  CPPUNIT_ASSERT(origin.distance(shifted_origin) == sqrt(4.*4. + 6.*6. + 3.*3.));
+  // PBC
+  CPPUNIT_ASSERT(origin.distance(shifted_origin, extents) == 0.);
 }
 
 void TestDisc::test_overlap()
@@ -55,6 +64,9 @@ void TestDisc::test_overlap()
   CPPUNIT_ASSERT(origin.is_overlapping(overlaps_origin) == overlaps_origin.is_overlapping(origin)); // symmetry
   CPPUNIT_ASSERT(! (origin.is_overlapping(does_not_overlap_origin))); // function itself
   CPPUNIT_ASSERT(origin.is_overlapping(does_not_overlap_origin) == does_not_overlap_origin.is_overlapping(origin)); // symmetry
+
+  CPPUNIT_ASSERT(! (origin.is_overlapping(overlaps_origin_only_when_pbc)));
+  CPPUNIT_ASSERT(origin.is_overlapping(overlaps_origin_only_when_pbc, extents));
 }
 
 void TestDisc::test_translate()

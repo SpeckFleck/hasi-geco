@@ -17,8 +17,6 @@
 #include <vector>
 #include <numeric>
 
-#include <iostream>
-
 #include <random_boost_mt19937.hpp>
 #include <stdint.h>
 #include <cmath>
@@ -35,6 +33,8 @@ CppUnit::Test* TestPoint::suite()
 
 void TestPoint::setUp()
 {
+  const mcchd::coordinate_type new_extents = {{4., 6., 3.}};
+  extents = new_extents;
   test_point = new mcchd::Point();
 }
 
@@ -45,19 +45,22 @@ void TestPoint::tearDown()
 
 void TestPoint::test_distance()
 {
-  mcchd::Point origin = mcchd::Point();
+  mcchd::Point origin = mcchd::Point(0, 0, 0);
   CPPUNIT_ASSERT(test_point->distance(origin) == 0);
 
   mcchd::Point new_point = mcchd::Point(3, 2, 1);
   CPPUNIT_ASSERT(new_point != origin);
   CPPUNIT_ASSERT(new_point-new_point == origin);
   CPPUNIT_ASSERT(new_point.absolute() == sqrt(pow(3.0, 2) + pow(2.0, 2) + pow(1.0, 2)));
+
+  // PBC
+  CPPUNIT_ASSERT(origin.distance(new_point, extents) == sqrt(pow(1.0, 2) + pow(2.0, 2) + pow(1.0, 2)));
+  mcchd::Point shifted_origin = mcchd::Point(extents);
+  CPPUNIT_ASSERT(origin.distance(shifted_origin, extents) == 0.);
 }
 
 void TestPoint::test_random()
 {
-  mcchd::coordinate_type extents = {{4., 6., 3.}};
-
   Boost_MT19937 rng;
   
   boost::array<std::vector<double>, 3> mean_coor;

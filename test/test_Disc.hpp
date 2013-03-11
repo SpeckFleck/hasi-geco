@@ -22,10 +22,13 @@
 class TestDisc : CppUnit::TestFixture
 {
 private:
+  mcchd::coordinate_type extents;
   mcchd::Disc origin;
   mcchd::Disc to_move;
   mcchd::Disc overlaps_origin;
   mcchd::Disc does_not_overlap_origin;
+  mcchd::Disc shifted_origin;
+  mcchd::Disc overlaps_origin_only_when_pbc;
 public:
   static CppUnit::Test* suite();
   
