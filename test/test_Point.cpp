@@ -12,6 +12,13 @@
  */
 
 #include "test_Point.hpp"
+
+#include <boost/array.hpp>
+#include <vector>
+#include <numeric>
+
+#include <iostream>
+
 #include <random_boost_mt19937.hpp>
 #include <stdint.h>
 #include <cmath>
@@ -52,6 +59,8 @@ void TestPoint::test_random()
   mcchd::coordinate_type extents = {{4., 6., 3.}};
 
   Boost_MT19937 rng;
+  
+  boost::array<std::vector<double>, 3> mean_coor;
 
   for (uint32_t i = 0; i < 10000; i++)
     {
@@ -59,5 +68,14 @@ void TestPoint::test_random()
       CPPUNIT_ASSERT((0 <= random_point.get_coor(0)) && (random_point.get_coor(0) <= 4.));
       CPPUNIT_ASSERT((0 <= random_point.get_coor(1)) && (random_point.get_coor(1) <= 6.));
       CPPUNIT_ASSERT((0 <= random_point.get_coor(2)) && (random_point.get_coor(2) <= 3.));
+      for(uint8_t j = 0; j < 3; j++)
+	{
+	  mean_coor[j].push_back(random_point.get_coor(j));
+	}
     }
+  
+  CPPUNIT_ASSERT(((std::accumulate(mean_coor[0].begin(), mean_coor[0].end(), 0) / (double)mean_coor[0].size()) - 4./2.) < 0.1);
+  CPPUNIT_ASSERT(((std::accumulate(mean_coor[1].begin(), mean_coor[1].end(), 0) / (double)mean_coor[1].size()) - 6./2.) < 0.1);
+  CPPUNIT_ASSERT(((std::accumulate(mean_coor[2].begin(), mean_coor[2].end(), 0) / (double)mean_coor[2].size()) - 3./2.) < 0.1);
+ 
 }
