@@ -1,7 +1,7 @@
 // -*- coding: utf-8; -*-
 /*!
  * 
- * \file CollisionFunctor.hpp
+ * \file CollisionFunctor_SingularDefects.hpp
  * \brief Prototype example of a CollisionFunctor
  * 
  * Contains the following containers:
@@ -13,8 +13,8 @@
  * \author Johannes Knauf
  */
 
-#ifndef COLLISION_HPP
-#define COLLISION_HPP
+#ifndef COLLISIONFUNCTOR_SINGULARDEFECTS_HPP
+#define COLLISIONFUNCTOR_SINGULARDEFECTS_HPP
 
 #include <Point.hpp>
 #include <Disc.hpp>

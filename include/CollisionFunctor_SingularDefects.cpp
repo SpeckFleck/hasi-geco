@@ -1,7 +1,7 @@
 // -*- coding: utf-8; -*-
 /*!
  * 
- * \file CollisionFunctor.cpp
+ * \file CollisionFunctor_SingularDefects.cpp
  * \brief Prototype example of a CollisionFunctor
  * 
  * 
@@ -9,7 +9,7 @@
  * \author Johannes Knauf
  */
 
-#ifdef COLLISION_HPP
+#ifdef COLLISIONFUNCTOR_SINGULARDEFECTS_HPP
 
 namespace mcchd {
 

@@ -19,7 +19,17 @@ LDFLAGS = $(LDFLAGS_BOOST)
 
 TEST_LIBS = -lcppunit -lrandom -lboost_serialization -lpthread -lboost_signals
 TEST_LIBS_PATH = $(MOCASINNS_RANDOM_LIB)
-TEST_OBJECTS = test_mcchd_WangLandau.o test_mcchd_Metropolis.o test_Step.o test_HardDiscs.o test_CollisionFunctor_SingularDefects.o test_LookupTable.o test_Disc.o test_Point.o test.o
+TEST_OBJECTS += test_mcchd_WangLandau.o
+TEST_OBJECTS += test_mcchd_Metropolis.o
+TEST_OBJECTS += test_Step.o
+TEST_OBJECTS += test_HardDiscs.o
+TEST_OBJECTS += test_CollisionFunctor_SingularDefects.o
+TEST_OBJECTS += test_CollisionFunctor_NodalSurfaces.o
+TEST_OBJECTS += test_CollisionFunctor_SimpleGeometries.o
+TEST_OBJECTS += test_LookupTable.o
+TEST_OBJECTS += test_Disc.o
+TEST_OBJECTS += test_Point.o
+TEST_OBJECTS += test.o
 
 all: test
 

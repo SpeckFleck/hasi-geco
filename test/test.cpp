@@ -24,6 +24,8 @@
 #include "test_Point.hpp"
 #include "test_Disc.hpp"
 #include "test_CollisionFunctor_SingularDefects.hpp"
+#include "test_CollisionFunctor_NodalSurfaces.hpp"
+#include "test_CollisionFunctor_SimpleGeometries.hpp"
 #include "test_LookupTable.hpp"
 #include "test_Step.hpp"
 #include "test_HardDiscs.hpp"
@@ -37,6 +39,8 @@ int main()
   runner.addTest(TestPoint::suite());
   runner.addTest(TestDisc::suite());
   runner.addTest(TestCFSingularDefects::suite());
+  runner.addTest(TestCFNodalSurfaces::suite());
+  runner.addTest(TestCFSimpleGeometries::suite());
   runner.addTest(TestLookupTable::suite());
   runner.addTest(TestStep::suite());
   runner.addTest(TestHardDiscs::suite());
