@@ -1,11 +1,11 @@
-.NOTPARALLEL: src/mcchd_wl_bulk src/mcchd_wl_plane src/mcchd_wl_line src/mcchd_wl_point
+.PHONY: all clean
 
-all: test/test src/mcchd_wl_bulk src/mcchd_wl_plane src/mcchd_wl_line src/mcchd_wl_point
+all: src_dir test_dir
 
-src/mcchd_wl_bulk src/mcchd_wl_plane src/mcchd_wl_line src/mcchd_wl_point:
+src_dir:
 	$(MAKE) -C src/
 
-test/test:
+test_dir:
 	$(MAKE) -C test/
 
 clean:
