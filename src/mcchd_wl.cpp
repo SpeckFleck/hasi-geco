@@ -17,6 +17,20 @@
 #include <cstdlib>
 
 #include <boost/log/trivial.hpp>
+#include <boost/log/core.hpp>
+#include <boost/log/common.hpp>
+#include <boost/log/expressions.hpp>
+#include <boost/log/attributes.hpp>
+#include <boost/log/sinks.hpp>
+#include <boost/log/sinks/text_file_backend.hpp>
+#include <boost/log/utility/setup/console.hpp>
+#include <boost/log/utility/setup/file.hpp>
+#include <boost/log/utility/setup/common_attributes.hpp>
+#include <boost/log/sources/severity_logger.hpp>
+#include <boost/log/sources/record_ostream.hpp>
+#include <boost/log/sources/logger.hpp>
+#include <boost/log/support/date_time.hpp>
+
 #include <boost/program_options.hpp>
 #include <boost/format.hpp>
 #include <boost/filesystem.hpp>
@@ -29,7 +43,6 @@
 
 namespace boost_po = boost::program_options;
 namespace boost_fs = boost::filesystem;
-namespace boost_log = boost::log;
 
 #ifndef CONTAINER_NAME
 #define CONTAINER_NAME Bulk
@@ -56,8 +69,22 @@ static std::string output_directory;
 
 void init_logging()
 {
-  // TBD: Log to file + console out
-  // TBD: Log levels
+  boost::log::add_common_attributes();
+  boost::log::add_console_log(std::clog, 
+			      boost::log::keywords::format = boost::log::expressions::stream
+			      << boost::log::expressions::format_date_time< boost::posix_time::ptime >("TimeStamp", "%Y-%m-%d %H:%M:%S.%f")
+			      << " [" << boost::log::expressions::attr< unsigned int >("LineID")
+			      << "] <" << boost::log::expressions::attr< boost::log::trivial::severity_level >("Severity")
+			      << "> " << boost::log::expressions::message);
+  
+  boost::log::add_file_log (boost::log::keywords::file_name = (output_directory + std::string("/protocol.log")).c_str(), 
+			    boost::log::keywords::format = boost::log::expressions::stream
+			    << boost::log::expressions::format_date_time< boost::posix_time::ptime >("TimeStamp", "%Y-%m-%d %H:%M:%S.%f")
+			    << " [" << boost::log::expressions::attr< unsigned int >("LineID")
+			    << "] <" << boost::log::expressions::attr< boost::log::trivial::severity_level >("Severity")
+			    << "> " << boost::log::expressions::message);
+
+  boost::log::core::get()->set_filter(boost::log::trivial::severity >= boost::log::trivial::info);
   BOOST_LOG_TRIVIAL(info) << "Logging facilities successfully initialized.";
 }
 
@@ -146,10 +173,9 @@ void modfac_handler(ParentSimulationType* parent_simulation)
 // declaration of the main simulation routine -- defined below
 void run_simulation(boost_po::variables_map&, std::string&);
 
+
 int main(int argc, char* argv[])
 {
-  init_logging();
-
   try 
     {
       boost_po::options_description option_desc("Available options");
@@ -180,7 +206,6 @@ int main(int argc, char* argv[])
         }
       
       std::string program_name = std::string(argv[0]);
-      BOOST_LOG_TRIVIAL(debug) << "Options scanned. Starting program.";
 
       run_simulation(option_arguments, program_name);
     }
@@ -246,12 +271,14 @@ void run_simulation(boost_po::variables_map& option_arguments, std::string& prog
   output_directory = (output_directory_formatter % trial_number).str();
   while(boost_fs::exists(output_directory.c_str()))
     {
-      BOOST_LOG_TRIVIAL(info) << "Proposed output directory " << output_directory.c_str() << " already exists. Trying next suffix number." << std::endl;
+      BOOST_LOG_TRIVIAL(debug) << "Proposed output directory " << output_directory.c_str() << " already exists. Trying next suffix number." << std::endl;
       trial_number += 1;
       output_directory = (output_directory_formatter % trial_number).str();
     }
   boost_fs::create_directory(output_directory.c_str());
   BOOST_LOG_TRIVIAL(debug) << "Created output directory " << output_directory.c_str() << std::endl;
+
+  init_logging();
 
   // create simulation objects
   mcchd::coordinate_type extents = {{x_max, y_max, z_max}};

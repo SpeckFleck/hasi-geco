@@ -54,6 +54,7 @@ def extract_data(file_or_directory_name):
         target_filename = file_or_directory_name + ".dat"
     elif os.path.isdir(file_or_directory_name):
         all_modfac_files = glob.glob(file_or_directory_name + "/modfac_entropy_dump,*")
+        all_modfac_files.sort(key=lambda f: os.path.getmtime(f))
         target_filename = os.path.join(file_or_directory_name, "modfac_extract.dat")
     else:
         return

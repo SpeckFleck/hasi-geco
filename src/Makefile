@@ -18,7 +18,7 @@ LDFLAGS_BOOST = -static
 LDFLAGS = $(LDFLAGS_BOOST)
 
 MCCHD_WL_OPTIONS = 
-MCCHD_WL_LIBS = -lcppunit -lrandom -lboost_serialization -lboost_signals -lboost_program_options -lboost_system -lboost_filesystem -lboost_log -lboost_thread -lpthread -lrt
+MCCHD_WL_LIBS = -lcppunit -lrandom -lboost_serialization -lboost_signals -lboost_program_options -lboost_system -lboost_filesystem -lboost_log_setup -lboost_log -lboost_thread -lpthread -lrt
 MCCHD_WL_LIBS_PATH = $(MOCASINNS_RANDOM_LIB)
 MCCHD_WL_SOURCES = mcchd_wl.cpp
 
