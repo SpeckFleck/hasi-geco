@@ -88,7 +88,9 @@ def extract_data(file_or_directory_name):
         with open(out_filename, "w") as out_fhandle:
             for line in results:
                 out_fhandle.write("\t".join(map(str, line)) + "\n")
-
+    else:
+        print "\t".join(map(str, results[0]))
+        print "\t".join(map(str, results[-1]))
 
 def process_cmdline(argv = None):
     if not argv:
