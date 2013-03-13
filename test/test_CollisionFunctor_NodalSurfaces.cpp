@@ -55,5 +55,6 @@ void TestCFNodalSurfaces::test_collision_g()
 
 void TestCFNodalSurfaces::test_collision_iwp()
 {
-  mcchd::CF_IWPSurface container_iwp(extents);
+  mcchd::CF_InnerIWPSurface container_inner_iwp(extents);
+  mcchd::CF_OuterIWPSurface container_outer_iwp(extents);
 }

@@ -51,13 +51,23 @@ namespace mcchd
     bool collides_with(const Disc&) const;
   };
 
-  class CF_IWPSurface {
+  class CF_InnerIWPSurface {
   private:
     coordinate_type extents;
   public:
-    CF_IWPSurface();
-    CF_IWPSurface(const coordinate_type&);
-    ~CF_IWPSurface();
+    CF_InnerIWPSurface();
+    CF_InnerIWPSurface(const coordinate_type&);
+    ~CF_InnerIWPSurface();
+    bool collides_with(const Disc&) const;
+  };
+
+  class CF_OuterIWPSurface {
+  private:
+    coordinate_type extents;
+  public:
+    CF_OuterIWPSurface();
+    CF_OuterIWPSurface(const coordinate_type&);
+    ~CF_OuterIWPSurface();
     bool collides_with(const Disc&) const;
   };
 
