@@ -40,6 +40,8 @@
 #include <wang_landau.hpp>
 #include <HardDiscs.hpp>
 #include <CollisionFunctor_SingularDefects.hpp>
+#include <CollisionFunctor_NodalSurfaces.hpp>
+#include <CollisionFunctor_SimpleGeometries.hpp>
 
 namespace boost_po = boost::program_options;
 namespace boost_fs = boost::filesystem;
