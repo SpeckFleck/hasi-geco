@@ -1,1 +1,2 @@
-./mcchd_wl --width=7. --height=7. --depth=7. --seed=101 --flatness=0.9 --mod_final=1e-20 --mod_multi=0.9 --mod_start=0.001 --energy_limit=400 --sweep_steps=1000000
+./mcchd_wl_bulk --width=7. --height=7. --depth=7. --seed=101 --flatness=0.9 --mod_final=1e-20 --mod_multi=0.9 --mod_start=0.001 --energy_limit=400 --sweep_steps=1000000
+./mcchd_metropolis --seed=1 --relaxation_steps=100000 --width=7. --height=7. --depth=7. --num_measurements=100000 --beta=0.0 --steps_between_measurements=10000
