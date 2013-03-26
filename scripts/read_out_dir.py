@@ -16,10 +16,7 @@ import numpy as np
 import mpmath as mp
 mp.mp.dps = 1000
 
-thermal_wavelength_calculated = 1.
-thermal_wavelength_for_comparison = 4./3. * np.pi * 0.5**3
-thermal_wavelength_exponent_correction = np.log(thermal_wavelength_calculated) - np.log(thermal_wavelength_for_comparison)
-mu_values = np.arange(-4., 4., 1.)
+sphere_volume = 4./3. * np.pi * 0.5**3
 
 modfac_file_pattern = re.compile(r"modfac_entropy_dump,(?P<date>[0-9]{8}-[0-9]{6}),mod=(?P<modfac>[0-9.e-]+)$")
 
@@ -45,17 +42,17 @@ def mp_average(data, log_weights):
     total /= sum_weights
     return float(total)
 
-def calc_means(data):
+def calc_means(data, lambda_correction = 0., mu_values = np.arange(-4., 4., 1.)):
     means = []
     for mu in mu_values:
-        log_weights = data['S'] + data['n']*(mu + thermal_wavelength_exponent_correction)
+        log_weights = data['S'] + data['n']*(mu + lambda_correction)
         mean_for_mu = mp_average(data['n'], log_weights)
         if not mean_for_mu:
             continue
         means.append(mean_for_mu)
     return means
 
-def extract_data(file_or_directory_name):
+def extract_data(file_or_directory_name, lambda_correction = 0., mu_values = np.arange(-4., 4., 1.)):
     if os.path.isfile(file_or_directory_name):
         dir_mode = False
         all_modfac_files = [file_or_directory_name]
@@ -99,7 +96,12 @@ def process_cmdline(argv = None):
     import optparse
     parser = optparse.OptionParser(formatter=optparse.TitledHelpFormatter(width = 120), add_help_option = None)
     parser.add_option('-h', '--help', action='help', help="Show this help message and exit")
-    
+    parser.add_option('--lambda-in', action='store', dest='lambda_in', type="float", default=1., help="Specify thermal wavelength Lamba^3 used in simulation.")
+    parser.add_option('--lambda-out', action='store', dest='lambda_out', type="float", default=sphere_volume, help="Specify thermal wavelength Lamba^3 used in simulation.")
+    parser.add_option('--mu-min', action='store', dest='mu_min', type="float", default=-4., help="Minimal mu value")
+    parser.add_option('--mu-max', action='store', dest='mu_max', type="float", default=4., help="Maximal mu value - not included")
+    parser.add_option('--mu-step', action='store', dest='mu_step', type="float", default=1., help="Step size between mu values")
+  
     settings, args = parser.parse_args(argv)
     return settings, args
 
@@ -107,10 +109,16 @@ def process_cmdline(argv = None):
 def main(argv = None):
     settings, args = process_cmdline(argv)
 
+    thermal_wavelength_calculated = settings.lambda_in
+    thermal_wavelength_for_comparison = settings.lambda_out
+    thermal_wavelength_exponent_correction = np.log(thermal_wavelength_calculated) - np.log(thermal_wavelength_for_comparison)
+
+    mu_values = np.arange(settings.mu_min, settings.mu_max, settings.mu_step)
+
     out_files_or_dirs = args
     for out_file_or_dir in out_files_or_dirs:
         logger.info("Beginning processing of " + str(out_file_or_dir))
-        extract_data(out_file_or_dir)
+        extract_data(out_file_or_dir, lambda_correction = thermal_wavelength_exponent_correction, mu_values = mu_values)
     
     return 0
 
