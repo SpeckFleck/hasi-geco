@@ -20,11 +20,14 @@
 #include <Step.hpp>
 #include <HardDiscs.hpp>
 #include <CollisionFunctor_SingularDefects.hpp>
+#include <mocasinns/random/boost_random.hpp>
+
+typedef Mocasinns::Random::Boost_MT19937 Boost_MT19937;
 
 class TestStep : CppUnit::TestFixture
 {
 private:
-  mcchd::HardDiscs<Boost_MT19937, mcchd::CF_Bulk>* hard_disc_configuration;
+  mcchd::HardDiscs<mcchd::CF_Bulk>* hard_disc_configuration;
   Boost_MT19937 rng;
 public:
   static CppUnit::Test* suite();

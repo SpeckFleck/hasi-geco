@@ -18,6 +18,8 @@
 #include <cppunit/Test.h>
 
 #include <Point.hpp>
+#include <mocasinns/random/boost_random.hpp>
+typedef Mocasinns::Random::Boost_MT19937 Boost_MT19937;
 
 class TestPoint : CppUnit::TestFixture
 {

@@ -17,15 +17,17 @@
 #include <cppunit/TestSuite.h>
 #include <cppunit/Test.h>
 
-#include <random_boost_mt19937.hpp>
-#include <metropolis.hpp>
+#include <mocasinns/random/boost_random.hpp>
+#include <mocasinns/metropolis.hpp>
 #include <HardDiscs.hpp>
 #include <CollisionFunctor_SingularDefects.hpp>
 
+typedef Mocasinns::Random::Boost_MT19937 Boost_MT19937;
+
 class TestMCCHDMetropolis : CppUnit::TestFixture
 {
-  typedef mcchd::HardDiscs<Boost_MT19937, mcchd::CF_Bulk> ConfigurationType;
-  typedef mcchd::Step<Boost_MT19937, mcchd::CF_Bulk> StepType;
+  typedef mcchd::HardDiscs<mcchd::CF_Bulk> ConfigurationType;
+  typedef mcchd::Step<mcchd::CF_Bulk> StepType;
   typedef Mocasinns::Metropolis<ConfigurationType, StepType, Boost_MT19937> SimulationType;
 private:
   ConfigurationType* test_configuration;

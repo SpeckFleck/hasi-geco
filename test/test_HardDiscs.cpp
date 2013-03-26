@@ -27,7 +27,7 @@ void TestHardDiscs::setUp()
 {
   mcchd::coordinate_type extents = {{5., 5., 5.}};
 
-  hard_disc_configuration = new mcchd::HardDiscs<Boost_MT19937, mcchd::CF_PointDefect>(extents);
+  hard_disc_configuration = new mcchd::HardDiscs<mcchd::CF_PointDefect>(extents);
   hard_disc_configuration->insert_disc(mcchd::Point(3,4,1));
   hard_disc_configuration->insert_disc(mcchd::Point(3,4,4));
 }

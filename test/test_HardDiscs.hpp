@@ -18,13 +18,12 @@
 #include <cppunit/Test.h>
 
 #include <HardDiscs.hpp>
-#include <random_boost_mt19937.hpp>
 #include <CollisionFunctor_SingularDefects.hpp>
 
 class TestHardDiscs : CppUnit::TestFixture
 {
 private:
-  mcchd::HardDiscs<Boost_MT19937, mcchd::CF_PointDefect>* hard_disc_configuration;
+  mcchd::HardDiscs<mcchd::CF_PointDefect>* hard_disc_configuration;
 public:
   static CppUnit::Test* suite();
   

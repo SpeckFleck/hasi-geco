@@ -13,7 +13,6 @@
  */
 
 #include "test_mcchd_Metropolis.hpp"
-#include <metropolis.hpp>
 
 CppUnit::Test* TestMCCHDMetropolis::suite()
 {
@@ -52,7 +51,8 @@ void TestMCCHDMetropolis::test_metropolis()
     sum += test_simulation->get_config_space()->energy();
   }
   peak = sum / static_cast<double> (n);
-  CPPUNIT_ASSERT(2.0 < peak && peak < 3.0); 
+  // std::cout << "beta_mu = -4.  =>  <N>= " << peak << std::endl;
+  CPPUNIT_ASSERT(3.5 < peak && peak < 4.5); 
 
   // part 2: beta = -4
   sum = 0;
@@ -63,8 +63,9 @@ void TestMCCHDMetropolis::test_metropolis()
     test_simulation->do_metropolis_steps(1000, -4.);
     sum += test_simulation->get_config_space()->energy();
   }
+  // std::cout << "beta_mu = 4.  =>  <N>= " << peak << std::endl;
   peak = sum / static_cast<double> (n);
-  CPPUNIT_ASSERT(70. < peak); 
+  CPPUNIT_ASSERT(75. < peak); 
 
   // part 3: beta = 0
   sum = 0;
@@ -76,5 +77,6 @@ void TestMCCHDMetropolis::test_metropolis()
     sum += test_simulation->get_config_space()->energy();
   }
   peak = sum / static_cast<double> (n);
-  CPPUNIT_ASSERT(35. < peak && peak < 38.);
+  // std::cout << "beta_mu = 0.  =>  <N>= " << peak << std::endl;
+  CPPUNIT_ASSERT(42. < peak && peak < 45.);
 }

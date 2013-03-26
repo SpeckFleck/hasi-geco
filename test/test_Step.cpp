@@ -29,7 +29,7 @@ void TestStep::setUp()
   extents[1] = 5.;
   extents[2] = 5.;
 
-  hard_disc_configuration = new mcchd::HardDiscs<Boost_MT19937, mcchd::CF_Bulk>(extents);
+  hard_disc_configuration = new mcchd::HardDiscs<mcchd::CF_Bulk>(extents);
 }
 
 void TestStep::tearDown()
@@ -48,7 +48,7 @@ void TestStep::test_execute()
 
   for (uint32_t i = 0; i < 10000; i++)
     {
-      mcchd::Step<Boost_MT19937, mcchd::CF_Bulk> random_step = hard_disc_configuration->propose_step(&rng);
+      mcchd::Step<mcchd::CF_Bulk> random_step = hard_disc_configuration->propose_step(&rng);
 
       const mcchd::energy_type energy_before = hard_disc_configuration->energy();
       const mcchd::energy_type energy_change = random_step.delta_E();

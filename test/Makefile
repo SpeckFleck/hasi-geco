@@ -3,22 +3,20 @@ CXX = g++
 
 MOCASINNS_ROOT = ../../mocasinns
 MOCASINNS_INCLUDE =  -I$(MOCASINNS_ROOT)/libmocasinns/include
-MOCASINNS_RANDOM_INCLUDE = -I$(MOCASINNS_ROOT)/librandom/include
-MOCASINNS_RANDOM_LIB = -L$(MOCASINNS_ROOT)/librandom/lib
 
 CFLAGS_DEBUG = -ggdb3 -pg
 CFLAGS_PREFERENCES = -std=gnu++0x -mfpmath=sse
 CFLAGS_OPTIMIZATION = #-O3 -march=native
 CFLAGS_WARNINGS = -Wall -Wextra -pedantic
-CFLAGS_INCLUDE = -I../include $(MOCASINNS_RANDOM_INCLUDE) $(MOCASINNS_INCLUDE)
+CFLAGS_INCLUDE = -I../include $(MOCASINNS_INCLUDE)
 CFLAGS = $(CFLAGS_DEBUG) $(CFLAGS_PREFERENCES) $(CFLAGS_OPTIMIZATION) $(CFLAGS_WARNINGS) $(CFLAGS_INCLUDE)
 
 
 LDFLAGS_BOOST = -static
 LDFLAGS = $(LDFLAGS_BOOST)
 
-TEST_LIBS = -lcppunit -lrandom -lboost_serialization -lpthread -lboost_signals
-TEST_LIBS_PATH = $(MOCASINNS_RANDOM_LIB)
+TEST_LIBS = -lcppunit -lboost_serialization -lpthread -lboost_signals
+TEST_LIBS_PATH = 
 TEST_OBJECTS += test_mcchd_WangLandau.o
 TEST_OBJECTS += test_mcchd_Metropolis.o
 TEST_OBJECTS += test_Step.o

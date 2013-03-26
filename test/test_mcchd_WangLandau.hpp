@@ -17,17 +17,19 @@
 #include <cppunit/TestSuite.h>
 #include <cppunit/Test.h>
 
-#include <random_boost_mt19937.hpp>
-#include <histograms/histocrete.hpp>
-#include <wang_landau.hpp>
+#include <mocasinns/random/boost_random.hpp>
+#include <mocasinns/histograms/histocrete.hpp>
+#include <mocasinns/wang_landau.hpp>
 #include <HardDiscs.hpp>
 #include <CollisionFunctor_SingularDefects.hpp>
+
+typedef Mocasinns::Random::Boost_MT19937 Boost_MT19937;
 
 class TestMCCHDWangLandau : CppUnit::TestFixture
 {
   typedef mcchd::disc_id_type energy_type;
-  typedef mcchd::HardDiscs<Boost_MT19937, mcchd::CF_Bulk> ConfigurationType;
-  typedef mcchd::Step<Boost_MT19937, mcchd::CF_Bulk> StepType;
+  typedef mcchd::HardDiscs<mcchd::CF_Bulk> ConfigurationType;
+  typedef mcchd::Step<mcchd::CF_Bulk> StepType;
   typedef Mocasinns::WangLandau<ConfigurationType, StepType, energy_type, Mocasinns::Histograms::Histocrete, Boost_MT19937> SimulationType;
 private:
   ConfigurationType* test_configuration;

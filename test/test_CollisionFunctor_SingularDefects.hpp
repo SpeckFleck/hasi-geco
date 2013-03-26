@@ -20,6 +20,9 @@
 #include <CollisionFunctor_SingularDefects.hpp>
 #include <Disc.hpp>
 
+#include <mocasinns/random/boost_random.hpp>
+typedef Mocasinns::Random::Boost_MT19937 Boost_MT19937;
+
 class TestCFSingularDefects : CppUnit::TestFixture
 {
 private:

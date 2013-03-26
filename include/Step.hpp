@@ -24,21 +24,21 @@
 namespace mcchd
 {
 
-  template <class, class> class HardDiscs;
+  template <class> class HardDiscs;
   typedef uint64_t simulation_time_type;
   typedef int energy_type;
 
-  template<class RandomNumberGenerator, class CollisionFunctor>
+  template<class CollisionFunctor>
   class Step {
   private:
-    HardDiscs<RandomNumberGenerator, CollisionFunctor>* const hard_disc_configuration_space;
+    HardDiscs<CollisionFunctor>* const hard_disc_configuration_space;
     disc_id_type to_be_removed;
     Point target_coor;
     simulation_time_type creation_simulation_time;
     bool is_remove; /// if not remove, insert
   public:
-    Step(HardDiscs<RandomNumberGenerator, CollisionFunctor>* const, const Point&); /// insert 
-    Step(HardDiscs<RandomNumberGenerator, CollisionFunctor>* const, const disc_id_type&); /// remove
+    Step(HardDiscs<CollisionFunctor>* const, const Point&); /// insert 
+    Step(HardDiscs<CollisionFunctor>* const, const disc_id_type&); /// remove
     ~Step();
     Disc get_old_spin() const;
     Disc get_new_spin() const;

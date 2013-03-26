@@ -35,7 +35,7 @@ namespace mcchd {
   typedef std::vector<Disc*> DiscCollection;
   typedef uint64_t time_type;
 
-  template<class RandomNumberGenerator, class CollisionFunctor>
+  template<class CollisionFunctor>
   class HardDiscs {
   private:
     CollisionFunctor container;
@@ -58,8 +58,8 @@ namespace mcchd {
     const time_type& get_simulation_time() const;
     const double& get_volume() const;
     bool is_overlapping(const Disc&);
-    Step<RandomNumberGenerator, CollisionFunctor> propose_step(RandomNumberGenerator*);
-    void commit(Step<RandomNumberGenerator, CollisionFunctor>&);
+    template <class RandomNumberGenerator> Step<CollisionFunctor> propose_step(RandomNumberGenerator*);
+    void commit(Step<CollisionFunctor>&);
     void remove_disc(const disc_id_type&);
     void insert_disc(const Point&);
 
