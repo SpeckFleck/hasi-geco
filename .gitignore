@@ -12,7 +12,16 @@ gmon.out
 /src/mcchd_wl_bulk
 /src/mcchd_wl_point
 /src/mcchd_wl_line
-/src/mcchd_wl_plane
+/src/mcchd_wl_innersphere
+/src/mcchd_wl_outersphere
+/src/mcchd_wl_innercylinder
+/src/mcchd_wl_outercylinder
+/src/mcchd_wl_nodal_p
+/src/mcchd_wl_nodal_g
+/src/mcchd_wl_nodal_d
+/src/mcchd_wl_nodal_inner_iwp
+/src/mcchd_wl_nodal_outer_iwp
+/src/mcchd_metropolis
 
 # results
 /results/
