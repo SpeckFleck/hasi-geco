@@ -35,9 +35,9 @@
 #include <boost/format.hpp>
 #include <boost/filesystem.hpp>
 
-#include <random_boost_mt19937.hpp>
-#include <histograms/histocrete.hpp>
-#include <wang_landau.hpp>
+#include <mocasinns/random/boost_random.hpp>
+#include <mocasinns/histograms/histocrete.hpp>
+#include <mocasinns/wang_landau.hpp>
 #include <HardDiscs.hpp>
 #include <CollisionFunctor_SingularDefects.hpp>
 #include <CollisionFunctor_NodalSurfaces.hpp>
@@ -58,9 +58,9 @@ namespace boost_fs = boost::filesystem;
 
 typedef uint64_t signal_flag_t;
 typedef mcchd::disc_id_type energy_type;
-typedef Boost_MT19937 RngType;
+typedef Mocasinns::Random::Boost_MT19937 RngType;
 typedef CONTAINER_TYPE ContainerType;
-typedef Mocasinns::Histograms::Histocrete<energy_type, long long int> IncidenceHistogramType;
+typedef Mocasinns::Histograms::Histocrete<energy_type, long unsigned int> IncidenceHistogramType;
 typedef Mocasinns::Histograms::Histocrete<energy_type, double> HistogramType;
 typedef mcchd::HardDiscs<RngType, ContainerType> ConfigurationType;
 typedef mcchd::Step<RngType, ContainerType> StepType;
@@ -202,7 +202,7 @@ int main(int argc, char* argv[])
       
       if (option_arguments.count("help"))
         {
-	  std::cerr << "Usage: moca [options]" << std::endl;
+	  std::cerr << "Usage: mcchd_wl [options]" << std::endl;
 	  std::cerr << option_desc;
           return 0;
         }
