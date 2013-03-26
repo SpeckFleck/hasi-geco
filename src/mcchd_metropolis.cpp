@@ -62,8 +62,8 @@ typedef Mocasinns::Random::Boost_MT19937 RngType;
 typedef CONTAINER_TYPE ContainerType;
 typedef Mocasinns::Histograms::Histocrete<energy_type, long long int> IncidenceHistogramType;
 typedef Mocasinns::Histograms::Histocrete<energy_type, double> HistogramType;
-typedef mcchd::HardDiscs<RngType, ContainerType> ConfigurationType;
-typedef mcchd::Step<RngType, ContainerType> StepType;
+typedef mcchd::HardDiscs<ContainerType> ConfigurationType;
+typedef mcchd::Step<ContainerType> StepType;
 typedef Mocasinns::Simulation<ConfigurationType, RngType> ParentSimulationType;
 typedef Mocasinns::Metropolis<ConfigurationType, StepType, RngType> SimulationType;
 
