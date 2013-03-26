@@ -26,12 +26,12 @@ namespace mcchd
   HardDiscs<RandomNumberGenerator, CollisionFunctor>::HardDiscs(const coordinate_type& new_extents) : container(new_extents), disc_table(new_extents), simulation_time(0)
   {
     extents = new_extents;
-
     volume = (extents[0] * extents[1] * extents[2]);
-    double close_packing_fraction = M_PIl / 3. / sqrt(2.);
-    double max_occupied_volume = volume * close_packing_fraction;
-    double sphere_volume = M_PIl * 4. / 3. * DEFAULT_DISC_RADIUS * DEFAULT_DISC_RADIUS * DEFAULT_DISC_RADIUS;
-    disc_id_type max_discs = static_cast<disc_id_type> (ceil(max_occupied_volume / sphere_volume));
+
+    const double close_packing_fraction = M_PI / 3. / sqrt(2.);
+    const double max_occupied_volume = volume * close_packing_fraction;
+    const double sphere_volume = M_PI * 4. / 3. * DEFAULT_DISC_RADIUS * DEFAULT_DISC_RADIUS * DEFAULT_DISC_RADIUS;
+    const disc_id_type max_discs = static_cast<disc_id_type> (ceil(max_occupied_volume / sphere_volume));
     for (disc_id_type disc_id = 0; disc_id < max_discs; disc_id++)
       {
 	all_discs.push_back(new Disc(disc_id));
@@ -113,7 +113,7 @@ namespace mcchd
       }
     else
       {
-	const disc_id_type random_disc = rng->random_uint32(0, num_present ? num_present - 1 : 0); // num_present - 1 is included
+	const disc_id_type random_disc = rng->random_uint32(0, num_present > 0 ? num_present - 1 : 0); // num_present - 1 is included
 	return Step<RandomNumberGenerator, CollisionFunctor>(this, random_disc); // remove constructor
       }
   }
