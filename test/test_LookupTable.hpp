@@ -37,6 +37,7 @@ public:
 
   void test_get_neighbours();
   void test_remove_insert();
+  void test_randomized();
 };
 
 #endif

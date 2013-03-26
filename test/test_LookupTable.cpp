@@ -17,6 +17,7 @@ CppUnit::Test* TestLookupTable::suite()
   CppUnit::TestSuite* suite_of_tests = new CppUnit::TestSuite("TestLookupTable");
   suite_of_tests->addTest( new CppUnit::TestCaller<TestLookupTable>("LookupTable: test get neighbours function", &TestLookupTable::test_get_neighbours) );
   suite_of_tests->addTest( new CppUnit::TestCaller<TestLookupTable>("LookupTable: test remove and insert function", &TestLookupTable::test_remove_insert) );
+  suite_of_tests->addTest( new CppUnit::TestCaller<TestLookupTable>("LookupTable: test randomized", &TestLookupTable::test_randomized) );
   
   return suite_of_tests;
 }
@@ -79,3 +80,10 @@ void TestLookupTable::test_remove_insert()
 
   
 }
+
+void TestLookupTable::test_randomized()
+{
+  // insert til nothing is possible any more
+  // check collisions against brute force collision check
+}
+
