@@ -18,12 +18,12 @@ namespace mcchd {
 
   inline multi_index_type LookupTable::get_cell_idx(const Point& point) const
   {
-    multi_index_type multi_idx;
-    multi_idx[0] = static_cast<index_type> (floor(fmod(point.get_coor(0), extents[0]) / cell_scale[0]));
-    multi_idx[1] = static_cast<index_type> (floor(fmod(point.get_coor(1), extents[1]) / cell_scale[1]));
-    multi_idx[2] = static_cast<index_type> (floor(fmod(point.get_coor(2), extents[2]) / cell_scale[2]));
+    multi_index_type point_idx;
+    point_idx[0] = static_cast<index_type> (floor(fmod(point.get_coor(0), extents[0]) / cell_scale[0]));
+    point_idx[1] = static_cast<index_type> (floor(fmod(point.get_coor(1), extents[1]) / cell_scale[1]));
+    point_idx[2] = static_cast<index_type> (floor(fmod(point.get_coor(2), extents[2]) / cell_scale[2]));
 
-    return multi_idx;
+    return point_idx;
   }
 
   inline LookupTable::LookupTable()
@@ -68,16 +68,16 @@ namespace mcchd {
     // make check at initializtion? change correspondingly?
     for (int i = -2; i <= 2; i++)
       {
-	index_type i_idx = (multi_idx[0] + i) % num_cells[0];
+	const index_type i_idx = (multi_idx[0] + i) % num_cells[0];
 	for (int j = -2; j <= 2; j++)
 	  {
-	    index_type j_idx = (multi_idx[1] + j) % num_cells[1];
+	    const index_type j_idx = (multi_idx[1] + j) % num_cells[1];
 	    for (int k = -2; k <= 1; k++)
 	      {
-		index_type k_idx = (multi_idx[2] + k) % num_cells[2];
+		const index_type k_idx = (multi_idx[2] + k) % num_cells[2];
 		
 		const Disc* found_disc = ((*space_cells)[i_idx][j_idx][k_idx]);
-
+		
 		if (found_disc != NULL)
 		  neighbouring_discs.push_back(found_disc);
 	      }	    
