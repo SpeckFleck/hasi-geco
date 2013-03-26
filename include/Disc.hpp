@@ -11,13 +11,12 @@
 #ifndef DISC_HPP
 #define DISC_HPP
 
-#define DEFAULT_DISC_RADIUS 0.5
-
 #include <cstdint>
 #include <Point.hpp>
 
 namespace mcchd {
 
+  const double DEFAULT_DISC_RADIUS = 0.5;
   typedef uint32_t disc_id_type;
 
   class Disc {
