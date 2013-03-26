@@ -10,34 +10,32 @@
 #ifndef POINT_HPP
 #define POINT_HPP
 
-#include <random_boost_mt19937.hpp>
 #include <boost/array.hpp>
 
 namespace mcchd {
 
   typedef boost::array<double, 3> coordinate_type;
 
-  template <class RandomNumberGenerator = Boost_MT19937>
   class Point_3d {
   private:
     coordinate_type coors;
   public:
     Point_3d();
-    Point_3d(RandomNumberGenerator*, const coordinate_type&); // random point in container
+    template <class RandomNumberGenerator> Point_3d(RandomNumberGenerator*, const coordinate_type&); // random point in container
     Point_3d(const double&, const double&, const double&);
     Point_3d(const coordinate_type&);
     ~Point_3d();
     double get_coor(const uint8_t&) const;
     void set_coor(const uint8_t&, const double&);
     double absolute() const;
-    double distance(const Point_3d<RandomNumberGenerator>&) const;
-    double distance(const Point_3d<RandomNumberGenerator>&, const coordinate_type&) const;
-    Point_3d<RandomNumberGenerator> operator-(const Point_3d<RandomNumberGenerator>&) const;
-    bool operator==(const Point_3d<RandomNumberGenerator>&) const;
-    bool operator!=(const Point_3d<RandomNumberGenerator>&) const;
+    double distance(const Point_3d&) const;
+    double distance(const Point_3d&, const coordinate_type&) const;
+    Point_3d operator-(const Point_3d&) const;
+    bool operator==(const Point_3d&) const;
+    bool operator!=(const Point_3d&) const;
   };
 
-  typedef Point_3d<Boost_MT19937> Point;
+  typedef Point_3d Point;
 }
 
 
