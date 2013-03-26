@@ -83,7 +83,7 @@ namespace mcchd
   template<class CollisionFunctor>
   bool HardDiscs<CollisionFunctor>::is_overlapping(const Disc& test_disc)
   {
-    bool collides_with_container = container.collides_with(test_disc);
+    const bool collides_with_container = container.collides_with(test_disc);
     if (collides_with_container)
       return true;
 

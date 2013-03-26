@@ -68,17 +68,17 @@ namespace mcchd {
     // make check at initializtion? change correspondingly?
     for (int i = -2; i <= 2; i++)
       {
-	const index_type i_idx = (multi_idx[0] + i) % num_cells[0];
+	const index_type i_idx = (multi_idx[0] + num_cells[0] + i) % num_cells[0];
 	for (int j = -2; j <= 2; j++)
 	  {
-	    const index_type j_idx = (multi_idx[1] + j) % num_cells[1];
-	    for (int k = -2; k <= 1; k++)
+	    const index_type j_idx = (multi_idx[1] + num_cells[1] + j) % num_cells[1];
+	    for (int k = -2; k <= 2; k++)
 	      {
-		const index_type k_idx = (multi_idx[2] + k) % num_cells[2];
+		const index_type k_idx = (multi_idx[2] + num_cells[2] + k) % num_cells[2];
 		
 		const Disc* found_disc = ((*space_cells)[i_idx][j_idx][k_idx]);
 		
-		if (found_disc != NULL)
+ 		if (found_disc != NULL)
 		  neighbouring_discs.push_back(found_disc);
 	      }	    
 	  }
