@@ -30,6 +30,7 @@ namespace mcchd
 
   typedef std::vector<Disc*> DiscCollection;
   typedef uint64_t time_type;
+  typedef int energy_type;
 
 }
 

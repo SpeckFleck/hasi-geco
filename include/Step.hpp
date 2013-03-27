@@ -21,28 +21,25 @@
 #include <Disc.hpp>
 #include <Point.hpp>
 
+#include <mcchd_typedefs.hpp>
+
 namespace mcchd
 {
-
-  template <class> class HardDiscs;
-  typedef uint64_t simulation_time_type;
-  typedef int energy_type;
-
-  template<class CollisionFunctor>
+  template<class HardDiscSpace>
   class Step {
   private:
-    HardDiscs<CollisionFunctor>* const hard_disc_configuration_space;
+    HardDiscSpace* const hard_disc_configuration_space;
     disc_id_type to_be_removed;
     Point target_coor;
-    simulation_time_type creation_simulation_time;
+    time_type creation_simulation_time;
     bool is_remove; /// if not remove, insert
   public:
-    Step(HardDiscs<CollisionFunctor>* const, const Point&); /// insert 
-    Step(HardDiscs<CollisionFunctor>* const, const disc_id_type&); /// remove
+    Step(HardDiscSpace* const, const Point&); /// insert 
+    Step(HardDiscSpace* const, const disc_id_type&); /// remove
     ~Step();
     Disc get_old_spin() const;
     Disc get_new_spin() const;
-    int get_creation_simulation_time() const;
+    time_type get_creation_simulation_time() const;
     energy_type delta_E() const;
     bool is_executable() const;
     bool is_remove_step() const;

@@ -104,23 +104,23 @@ namespace mcchd
 
   template <class CollisionFunctor>
   template <class RandomNumberGenerator>
-  Step<CollisionFunctor> HardDiscs<CollisionFunctor>::propose_step(RandomNumberGenerator* rng)
+  Step<HardDiscs<CollisionFunctor> > HardDiscs<CollisionFunctor>::propose_step(RandomNumberGenerator* rng)
   {
     const double insert_or_remove = rng->random_double();
     if (insert_or_remove < 0.5)
       {
 	const Point random_center = Point(rng, extents);
-	return Step<CollisionFunctor>(this, random_center); /// insert constructor
+	return Step<HardDiscs<CollisionFunctor> >(this, random_center); /// insert constructor
       }
     else
       {
 	const disc_id_type random_disc = rng->random_uint32(0, num_present > 0 ? num_present - 1 : 0); // num_present - 1 is included
-	return Step<CollisionFunctor>(this, random_disc); // remove constructor
+	return Step<HardDiscs<CollisionFunctor> >(this, random_disc); // remove constructor
       }
   }
 
   template<class CollisionFunctor>
-  void HardDiscs<CollisionFunctor>::commit(Step<CollisionFunctor>& step_to_commit)
+  void HardDiscs<CollisionFunctor>::commit(Step<HardDiscs<CollisionFunctor> >& step_to_commit)
   {
     if (step_to_commit.is_remove_step())
       {

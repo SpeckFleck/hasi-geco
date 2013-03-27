@@ -52,6 +52,7 @@ namespace mcchd {
     coordinate_type extents;
     double volume;
     time_type simulation_time;
+
   public:
     HardDiscs();
     HardDiscs(const coordinate_type& extents);
@@ -62,8 +63,8 @@ namespace mcchd {
     const time_type& get_simulation_time() const;
     const double& get_volume() const;
     bool is_overlapping(const Disc&);
-    template <class RandomNumberGenerator> Step<CollisionFunctor> propose_step(RandomNumberGenerator*);
-    void commit(Step<CollisionFunctor>&);
+    template <class RandomNumberGenerator> Step<HardDiscs<CollisionFunctor> > propose_step(RandomNumberGenerator*);
+    void commit(Step<HardDiscs<CollisionFunctor> >&);
     void remove_disc(const disc_id_type&);
     void insert_disc(const Point&);
 

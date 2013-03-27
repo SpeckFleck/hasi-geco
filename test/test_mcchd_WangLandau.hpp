@@ -29,7 +29,7 @@ class TestMCCHDWangLandau : CppUnit::TestFixture
 {
   typedef mcchd::disc_id_type energy_type;
   typedef mcchd::HardDiscs<mcchd::CF_Bulk> ConfigurationType;
-  typedef mcchd::Step<mcchd::CF_Bulk> StepType;
+  typedef mcchd::Step<ConfigurationType> StepType;
   typedef Mocasinns::WangLandau<ConfigurationType, StepType, energy_type, Mocasinns::Histograms::Histocrete, Boost_MT19937> SimulationType;
 private:
   ConfigurationType* test_configuration;

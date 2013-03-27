@@ -26,8 +26,9 @@ typedef Mocasinns::Random::Boost_MT19937 Boost_MT19937;
 
 class TestStep : CppUnit::TestFixture
 {
+  typedef mcchd::HardDiscs<mcchd::CF_Bulk> HardDiscSpace;
 private:
-  mcchd::HardDiscs<mcchd::CF_Bulk>* hard_disc_configuration;
+  TestStep::HardDiscSpace* hard_disc_configuration;
   Boost_MT19937 rng;
 public:
   static CppUnit::Test* suite();

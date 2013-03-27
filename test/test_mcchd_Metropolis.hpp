@@ -27,7 +27,7 @@ typedef Mocasinns::Random::Boost_MT19937 Boost_MT19937;
 class TestMCCHDMetropolis : CppUnit::TestFixture
 {
   typedef mcchd::HardDiscs<mcchd::CF_Bulk> ConfigurationType;
-  typedef mcchd::Step<mcchd::CF_Bulk> StepType;
+  typedef mcchd::Step<ConfigurationType> StepType;
   typedef Mocasinns::Metropolis<ConfigurationType, StepType, Boost_MT19937> SimulationType;
 private:
   ConfigurationType* test_configuration;
