@@ -28,6 +28,9 @@ namespace mcchd
   typedef boost::multi_array_types::index index_type;
   typedef boost::array<index_type, dimensions> multi_index_type;
 
+  typedef std::vector<Disc*> DiscCollection;
+  typedef uint64_t time_type;
+
 }
 
 

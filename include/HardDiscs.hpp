@@ -30,10 +30,10 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 
-namespace mcchd {
+#include <mcchd_typedefs.hpp>
 
-  typedef std::vector<Disc*> DiscCollection;
-  typedef uint64_t time_type;
+
+namespace mcchd {
 
   typedef LookupTable_Fast LookupTable;
 
