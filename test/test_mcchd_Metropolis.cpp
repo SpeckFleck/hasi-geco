@@ -47,7 +47,7 @@ void TestMCCHDMetropolis::test_metropolis()
   for (uint32_t i = 0; i < 100; i++)
   {
     n++;
-    test_simulation->do_metropolis_steps(100, 4.);
+    test_simulation->do_metropolis_steps(1000, 4.);
     sum += test_simulation->get_config_space()->energy();
   }
   peak = sum / static_cast<double> (n);
@@ -63,9 +63,9 @@ void TestMCCHDMetropolis::test_metropolis()
     test_simulation->do_metropolis_steps(1000, -4.);
     sum += test_simulation->get_config_space()->energy();
   }
-  // std::cout << "beta_mu = 4.  =>  <N>= " << peak << std::endl;
   peak = sum / static_cast<double> (n);
-  CPPUNIT_ASSERT(75. < peak); 
+  // std::cout << "beta_mu = 4.  =>  <N>= " << peak << std::endl;
+  CPPUNIT_ASSERT(70. < peak && peak < 80.); 
 
   // part 3: beta = 0
   sum = 0;
@@ -73,10 +73,10 @@ void TestMCCHDMetropolis::test_metropolis()
   for (uint32_t i = 0; i < 100; i++)
   {
     n++;
-    test_simulation->do_metropolis_steps(100, 0.);
+    test_simulation->do_metropolis_steps(1000, 0.);
     sum += test_simulation->get_config_space()->energy();
   }
   peak = sum / static_cast<double> (n);
   // std::cout << "beta_mu = 0.  =>  <N>= " << peak << std::endl;
-  CPPUNIT_ASSERT(42. < peak && peak < 45.);
+  CPPUNIT_ASSERT(35. < peak && peak < 42.);
 }
