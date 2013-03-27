@@ -66,13 +66,14 @@ namespace mcchd {
     multi_index_type multi_idx = get_cell_idx(around_point);
     // using -2:2 is fuddled, for x_max < 4 it should be -3:3 to avoid collisions
     // make check at initializtion? change correspondingly?
-    for (int i = -2; i <= 2; i++)
+    const int cell_range = 2;
+    for (int i = -cell_range; i <= cell_range; i++)
       {
 	const index_type i_idx = (multi_idx[0] + num_cells[0] + i) % num_cells[0];
-	for (int j = -2; j <= 2; j++)
+	for (int j = -cell_range; j <= cell_range; j++)
 	  {
 	    const index_type j_idx = (multi_idx[1] + num_cells[1] + j) % num_cells[1];
-	    for (int k = -2; k <= 2; k++)
+	    for (int k = -cell_range; k <= cell_range; k++)
 	      {
 		const index_type k_idx = (multi_idx[2] + num_cells[2] + k) % num_cells[2];
 		
