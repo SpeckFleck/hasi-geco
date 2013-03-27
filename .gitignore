@@ -12,6 +12,7 @@ gmon.out
 /src/mcchd_wl_bulk
 /src/mcchd_wl_point
 /src/mcchd_wl_line
+/src/mcchd_wl_plane
 /src/mcchd_wl_innersphere
 /src/mcchd_wl_outersphere
 /src/mcchd_wl_innercylinder
