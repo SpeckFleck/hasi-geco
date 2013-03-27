@@ -26,6 +26,7 @@
 #include <Point.hpp>
 #include <Disc.hpp>
 #include <LookupTable_Fast.hpp>
+// #include <LookupTable_Brute.hpp>
 
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
@@ -36,6 +37,7 @@
 namespace mcchd {
 
   typedef LookupTable_Fast LookupTable;
+  // typedef LookupTable_Brute LookupTable;
 
   template<class CollisionFunctor>
   class HardDiscs {

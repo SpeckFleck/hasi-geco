@@ -1,8 +1,8 @@
 // -*- coding: utf-8; -*-
 /*!
  * 
- * \file LookupTable.hpp
- * \brief Lookup table header
+ * \file LookupTable_Brute.hpp
+ * \brief Lookup table header -- brute force super-slow
  * 
  * Pure helper class for HardDiscs implementarion
  * 
@@ -27,11 +27,9 @@ namespace mcchd {
   {
   private:
     coordinate_type extents;
-    coordinate_type cell_scale;
-    multi_index_type num_cells;
-    Cells3D* space_cells;
+    DiscCollection all_discs_mirror;
+    disc_id_type num_present;
 
-    multi_index_type get_cell_idx(const Point&) const;
   public:
     LookupTable_Brute();
     LookupTable_Brute(const coordinate_type&);
