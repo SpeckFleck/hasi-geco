@@ -16,7 +16,7 @@
 
 namespace mcchd {
 
-  inline multi_index_type LookupTable::get_cell_idx(const Point& point) const
+  inline multi_index_type LookupTable_Brute::get_cell_idx(const Point& point) const
   {
     multi_index_type point_idx;
     point_idx[0] = static_cast<index_type> (floor(fmod(point.get_coor(0), extents[0]) / cell_scale[0]));
@@ -26,11 +26,11 @@ namespace mcchd {
     return point_idx;
   }
 
-  inline LookupTable::LookupTable()
+  inline LookupTable_Brute::LookupTable_Brute()
   {
   }
 
-  inline LookupTable::LookupTable(const coordinate_type& new_extents)
+  inline LookupTable_Brute::LookupTable_Brute(const coordinate_type& new_extents)
   {
     extents = new_extents;
     const double base_scale = 2 * DEFAULT_DISC_RADIUS;
@@ -55,25 +55,24 @@ namespace mcchd {
       }
   }
 
-  inline LookupTable::~LookupTable()
+  inline LookupTable_Brute::~LookupTable_Brute()
   {
   }
 
-  inline DiscVec LookupTable::get_neighbouring_discs(const Point& around_point) const
+  inline DiscVec LookupTable_Brute::get_neighbouring_discs(const Point& around_point) const
   {
     DiscVec neighbouring_discs;
 
     multi_index_type multi_idx = get_cell_idx(around_point);
     // using -2:2 is fuddled, for x_max < 4 it should be -3:3 to avoid collisions
     // make check at initializtion? change correspondingly?
-    const int cell_range = 2;
-    for (int i = -cell_range; i <= cell_range; i++)
+    for (int i = -2; i <= 2; i++)
       {
 	const index_type i_idx = (multi_idx[0] + num_cells[0] + i) % num_cells[0];
-	for (int j = -cell_range; j <= cell_range; j++)
+	for (int j = -2; j <= 2; j++)
 	  {
 	    const index_type j_idx = (multi_idx[1] + num_cells[1] + j) % num_cells[1];
-	    for (int k = -cell_range; k <= cell_range; k++)
+	    for (int k = -2; k <= 2; k++)
 	      {
 		const index_type k_idx = (multi_idx[2] + num_cells[2] + k) % num_cells[2];
 		
@@ -88,14 +87,14 @@ namespace mcchd {
     return neighbouring_discs;
   }
 
-  inline void LookupTable::remove_disc(Disc* const disc_to_be_removed)
+  inline void LookupTable_Brute::remove_disc(Disc* const disc_to_be_removed)
   {
     const multi_index_type cell_idx = get_cell_idx(disc_to_be_removed->get_center());
     assert((*space_cells)(cell_idx) == disc_to_be_removed);
     (*space_cells)(cell_idx) = NULL;
   }
 
-  inline void LookupTable::insert_disc(Disc* const disc_to_be_inserted)
+  inline void LookupTable_Brute::insert_disc(Disc* const disc_to_be_inserted)
   {
     const multi_index_type cell_idx = get_cell_idx(disc_to_be_inserted->get_center());
     assert((*space_cells)(cell_idx) == NULL);

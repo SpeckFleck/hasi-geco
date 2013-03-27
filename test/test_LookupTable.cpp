@@ -26,7 +26,7 @@ void TestLookupTable::setUp()
 {
   mcchd::coordinate_type extents = {{5., 5., 5.}};
   
-  disc_table = new mcchd::LookupTable(extents);
+  disc_table = new mcchd::LookupTable_Fast(extents);
   test_discs.push_back(new mcchd::Disc(mcchd::Point(1,1,1), 0));
   test_discs.push_back(new mcchd::Disc(mcchd::Point(3,2,1), 1));
   test_discs.push_back(new mcchd::Disc(mcchd::Point(1,2,4), 2));

@@ -19,16 +19,16 @@
 
 #include <vector>
 
-#include <LookupTable.hpp>
+#include <LookupTable_Fast.hpp>
+#include <LookupTable_Brute.hpp>
 #include <Disc.hpp>
-
 
 class TestLookupTable : CppUnit::TestFixture
 {
   typedef std::vector<mcchd::Disc*> DiscPtrVec;
 private:
   DiscPtrVec test_discs;
-  mcchd::LookupTable *disc_table;
+  mcchd::LookupTable_Fast *disc_table;
 public:
   static CppUnit::Test* suite();
 

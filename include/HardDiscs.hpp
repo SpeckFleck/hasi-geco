@@ -25,7 +25,7 @@
 #include <Step.hpp>
 #include <Point.hpp>
 #include <Disc.hpp>
-#include <LookupTable.hpp>
+#include <LookupTable_Fast.hpp>
 
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
@@ -34,6 +34,8 @@ namespace mcchd {
 
   typedef std::vector<Disc*> DiscCollection;
   typedef uint64_t time_type;
+
+  typedef LookupTable_Fast LookupTable;
 
   template<class CollisionFunctor>
   class HardDiscs {

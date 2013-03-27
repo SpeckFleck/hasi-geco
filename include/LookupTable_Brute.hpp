@@ -19,17 +19,11 @@
 
 #include <Point.hpp>
 #include <Disc.hpp>
+#include <mcchd_typedefs.hpp>
 
 namespace mcchd {
 
-  const int dimensions = 3;
-
-  typedef boost::multi_array<Disc*, dimensions> Cells3D;
-  typedef std::vector<const Disc*> DiscVec;
-  typedef boost::multi_array_types::index index_type;
-  typedef boost::array<index_type, dimensions> multi_index_type;
-
-  class LookupTable
+  class LookupTable_Brute
   {
   private:
     coordinate_type extents;
@@ -39,9 +33,9 @@ namespace mcchd {
 
     multi_index_type get_cell_idx(const Point&) const;
   public:
-    LookupTable();
-    LookupTable(const coordinate_type&);
-    ~LookupTable();
+    LookupTable_Brute();
+    LookupTable_Brute(const coordinate_type&);
+    ~LookupTable_Brute();
     DiscVec get_neighbouring_discs(const Point&) const;
     void remove_disc(Disc* const);
     void insert_disc(Disc* const);
@@ -49,6 +43,6 @@ namespace mcchd {
 
 }
 
-#include <LookupTable.cpp>
+#include <LookupTable_Brute.cpp>
 
 #endif
