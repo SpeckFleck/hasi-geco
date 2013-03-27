@@ -63,7 +63,7 @@ typedef CONTAINER_TYPE ContainerType;
 typedef Mocasinns::Histograms::Histocrete<energy_type, long unsigned int> IncidenceHistogramType;
 typedef Mocasinns::Histograms::Histocrete<energy_type, double> HistogramType;
 typedef mcchd::HardDiscs<ContainerType> ConfigurationType;
-typedef mcchd::Step<ContainerType> StepType;
+typedef mcchd::Step<ConfigurationType> StepType;
 typedef Mocasinns::Simulation<ConfigurationType, RngType> ParentSimulationType;
 typedef Mocasinns::WangLandau<ConfigurationType, StepType, energy_type, Mocasinns::Histograms::Histocrete, RngType> SimulationType;
 

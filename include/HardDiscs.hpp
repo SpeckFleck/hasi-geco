@@ -26,7 +26,6 @@
 #include <Point.hpp>
 #include <Disc.hpp>
 #include <LookupTable_Fast.hpp>
-// #include <LookupTable_Brute.hpp>
 
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
@@ -36,10 +35,7 @@
 
 namespace mcchd {
 
-  typedef LookupTable_Fast LookupTable;
-  // typedef LookupTable_Brute LookupTable;
-
-  template<class CollisionFunctor>
+  template<class CollisionFunctor, class LookupTable = LookupTable_Fast>
   class HardDiscs {
   private:
     CollisionFunctor container;
@@ -63,8 +59,8 @@ namespace mcchd {
     const time_type& get_simulation_time() const;
     const double& get_volume() const;
     bool is_overlapping(const Disc&);
-    template <class RandomNumberGenerator> Step<HardDiscs<CollisionFunctor> > propose_step(RandomNumberGenerator*);
-    void commit(Step<HardDiscs<CollisionFunctor> >&);
+    template <class RandomNumberGenerator> Step<HardDiscs<CollisionFunctor, LookupTable> > propose_step(RandomNumberGenerator*);
+    void commit(Step<HardDiscs<CollisionFunctor, LookupTable> >&);
     void remove_disc(const disc_id_type&);
     void insert_disc(const Point&);
 

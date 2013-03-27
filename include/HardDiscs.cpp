@@ -17,13 +17,13 @@
 
 namespace mcchd
 {
-  template<class CollisionFunctor>
-  HardDiscs<CollisionFunctor>::HardDiscs() : simulation_time(0)
+  template<class CollisionFunctor, class LookupTable>
+  HardDiscs<CollisionFunctor, LookupTable>::HardDiscs() : simulation_time(0)
   {
   }
 
-  template<class CollisionFunctor>
-  HardDiscs<CollisionFunctor>::HardDiscs(const coordinate_type& new_extents) : container(new_extents), disc_table(new_extents), simulation_time(0)
+  template<class CollisionFunctor, class LookupTable>
+  HardDiscs<CollisionFunctor, LookupTable>::HardDiscs(const coordinate_type& new_extents) : container(new_extents), disc_table(new_extents), simulation_time(0)
   {
     extents = new_extents;
     volume = (extents[0] * extents[1] * extents[2]);
@@ -40,8 +40,8 @@ namespace mcchd
     num_present = 0; /// initial configuration: no disc present at start
   }
 
-  template<class CollisionFunctor>
-  HardDiscs<CollisionFunctor>::~HardDiscs()
+  template<class CollisionFunctor, class LookupTable>
+  HardDiscs<CollisionFunctor, LookupTable>::~HardDiscs()
   {
     while(!all_discs.empty())
       {
@@ -50,38 +50,38 @@ namespace mcchd
       }
   }
 
-  template<class CollisionFunctor>
-  coordinate_type HardDiscs<CollisionFunctor>::get_extents() const
+  template<class CollisionFunctor, class LookupTable>
+  coordinate_type HardDiscs<CollisionFunctor, LookupTable>::get_extents() const
   {
     return extents;
   }
 
-  template<class CollisionFunctor>
-  const disc_id_type& HardDiscs<CollisionFunctor>::get_number_of_discs() const
+  template<class CollisionFunctor, class LookupTable>
+  const disc_id_type& HardDiscs<CollisionFunctor, LookupTable>::get_number_of_discs() const
   {
     return num_present;
   }
 
-  template<class CollisionFunctor>
-  energy_type HardDiscs<CollisionFunctor>::energy() const
+  template<class CollisionFunctor, class LookupTable>
+  energy_type HardDiscs<CollisionFunctor, LookupTable>::energy() const
   {
     return num_present;
   }  
 
-  template<class CollisionFunctor>
-  const time_type& HardDiscs<CollisionFunctor>::get_simulation_time() const
+  template<class CollisionFunctor, class LookupTable>
+  const time_type& HardDiscs<CollisionFunctor, LookupTable>::get_simulation_time() const
   {
     return simulation_time;
   }  
 
-  template<class CollisionFunctor>
-  const double& HardDiscs<CollisionFunctor>::get_volume() const
+  template<class CollisionFunctor, class LookupTable>
+  const double& HardDiscs<CollisionFunctor, LookupTable>::get_volume() const
   {
     return volume;
   }  
 
-  template<class CollisionFunctor>
-  bool HardDiscs<CollisionFunctor>::is_overlapping(const Disc& test_disc)
+  template<class CollisionFunctor, class LookupTable>
+  bool HardDiscs<CollisionFunctor, LookupTable>::is_overlapping(const Disc& test_disc)
   {
     const bool collides_with_container = container.collides_with(test_disc);
     if (collides_with_container)
@@ -102,25 +102,25 @@ namespace mcchd
     return collides_with_other_disc;
   }
 
-  template <class CollisionFunctor>
+  template <class CollisionFunctor, class LookupTable>
   template <class RandomNumberGenerator>
-  Step<HardDiscs<CollisionFunctor> > HardDiscs<CollisionFunctor>::propose_step(RandomNumberGenerator* rng)
+  Step<HardDiscs<CollisionFunctor, LookupTable> > HardDiscs<CollisionFunctor, LookupTable>::propose_step(RandomNumberGenerator* rng)
   {
     const double insert_or_remove = rng->random_double();
     if (insert_or_remove < 0.5)
       {
 	const Point random_center = Point(rng, extents);
-	return Step<HardDiscs<CollisionFunctor> >(this, random_center); /// insert constructor
+	return Step<HardDiscs<CollisionFunctor, LookupTable> >(this, random_center); /// insert constructor
       }
     else
       {
 	const disc_id_type random_disc = rng->random_uint32(0, num_present > 0 ? num_present - 1 : 0); // num_present - 1 is included
-	return Step<HardDiscs<CollisionFunctor> >(this, random_disc); // remove constructor
+	return Step<HardDiscs<CollisionFunctor, LookupTable> >(this, random_disc); // remove constructor
       }
   }
 
-  template<class CollisionFunctor>
-  void HardDiscs<CollisionFunctor>::commit(Step<HardDiscs<CollisionFunctor> >& step_to_commit)
+  template<class CollisionFunctor, class LookupTable>
+  void HardDiscs<CollisionFunctor, LookupTable>::commit(Step<HardDiscs<CollisionFunctor, LookupTable> >& step_to_commit)
   {
     if (step_to_commit.is_remove_step())
       {
@@ -133,8 +133,8 @@ namespace mcchd
     simulation_time += 1;
   }
 
-  template<class CollisionFunctor>
-  void HardDiscs<CollisionFunctor>::remove_disc(const disc_id_type& disc_idx)
+  template<class CollisionFunctor, class LookupTable>
+  void HardDiscs<CollisionFunctor, LookupTable>::remove_disc(const disc_id_type& disc_idx)
   {
     Disc* const to_be_removed = all_discs[disc_idx];
     Disc* const last_disc = all_discs[num_present-1];
@@ -146,8 +146,8 @@ namespace mcchd
     disc_table.remove_disc(to_be_removed);
   }
 
-  template<class CollisionFunctor>
-  void HardDiscs<CollisionFunctor>::insert_disc(const Point& new_coors)
+  template<class CollisionFunctor, class LookupTable>
+  void HardDiscs<CollisionFunctor, LookupTable>::insert_disc(const Point& new_coors)
   {
     Disc* const first_unused_disc = all_discs[num_present];
     first_unused_disc->translate_to(new_coors);
