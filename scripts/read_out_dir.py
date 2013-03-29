@@ -49,7 +49,7 @@ def calc_means(data, lambda_correction = 0., mu_values = np.arange(-4., 4., 1.))
         mean_for_mu = mp_average(data['n'], log_weights)
         if not mean_for_mu:
             continue
-        means.append(mean_for_mu)
+        means.append((mu, mean_for_mu))
     return means
 
 def extract_data(file_or_directory_name, lambda_correction = 0., mu_values = np.arange(-4., 4., 1.)):
@@ -68,26 +68,36 @@ def extract_data(file_or_directory_name, lambda_correction = 0., mu_values = np.
     # parse directory name for parameters?
     # put parameters into files?
     
-    results = []
-    results.append(["# modfactor", "timestamp"] + ["mu={mu}".format(mu=mu) for mu in mu_values])
+    results_means = []
+    results_means.append(["# modfactor", "mu", "avN"])
+    results_timestamps = []
+    results_timestamps.append(["# modfactor", "timestamp"])
     for filename in all_modfac_files:
         parameters = parse_filename(filename)
         modfactor = parameters['modfactor']
         timestamp = parameters['timestamp']
+        results_timestamps.append((modfactor, timestamp))
+        
         logger.info("Processing entry t=" + str(timestamp) + " , m=" + str(modfactor))
         data = np.loadtxt(filename, dtype=[('n', 'i4'), ('S', 'f8')])
-        means = calc_means(data)
-        results.append([modfactor] + [timestamp] + means)
+        for mu, mean in calc_means(data, mu_values = mu_values):
+            results_means.append((modfactor, mu, mean))
 
     if dir_mode:
-        out_filename = os.path.join(file_or_directory_name, "read_out_results.dat")
-        logger.info("Writing results to file " + str(out_filename))
-        with open(out_filename, "w") as out_fhandle:
-            for line in results:
+        out_filename_means = os.path.join(file_or_directory_name, "read_out_results_means.dat")
+        logger.info("Writing results for mean particle numbers to file " + str(out_filename_means))
+        with open(out_filename_means, "w") as out_fhandle:
+            for line in results_means:
+                out_fhandle.write("\t".join(map(str, line)) + "\n")
+
+        out_filename_timestamps = os.path.join(file_or_directory_name, "read_out_results_timestamps.dat")
+        logger.info("Writing results for timestamps to file " + str(out_filename_timestamps))
+        with open(out_filename_timestamps, "w") as out_fhandle:
+            for line in results_timestamps:
                 out_fhandle.write("\t".join(map(str, line)) + "\n")
     else:
-        print "\t".join(map(str, results[0]))
-        print "\t".join(map(str, results[-1]))
+        logger.info("Single file mode not supported ATM.")
+
 
 def process_cmdline(argv = None):
     if not argv:
@@ -96,7 +106,7 @@ def process_cmdline(argv = None):
     import optparse
     parser = optparse.OptionParser(formatter=optparse.TitledHelpFormatter(width = 120), add_help_option = None)
     parser.add_option('-h', '--help', action='help', help="Show this help message and exit")
-    parser.add_option('--lambda-in', action='store', dest='lambda_in', type="float", default=1., help="Specify thermal wavelength Lamba^3 used in simulation.")
+    parser.add_option('--lambda-in', action='store', dest='lambda_in', type="float", default=sphere_volume, help="Specify thermal wavelength Lamba^3 used in simulation.")
     parser.add_option('--lambda-out', action='store', dest='lambda_out', type="float", default=sphere_volume, help="Specify thermal wavelength Lamba^3 used in simulation.")
     parser.add_option('--mu-min', action='store', dest='mu_min', type="float", default=-4., help="Minimal mu value")
     parser.add_option('--mu-max', action='store', dest='mu_max', type="float", default=4., help="Maximal mu value - not included")
