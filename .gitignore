@@ -3,6 +3,8 @@
 *.so
 *.a
 *.d
+*.pyc
+*.pyo
 gmon.out
 /test/.depend
 
