@@ -9,6 +9,8 @@ import time
 import datetime
 import logging
 
+import hdf5_types
+
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -52,7 +54,46 @@ def calc_means(data, lambda_correction = 0., mu_values = np.arange(-4., 4., 1.))
         means.append((mu, mean_for_mu))
     return means
 
-def extract_data(file_or_directory_name, lambda_correction = 0., mu_values = np.arange(-4., 4., 1.)):
+def write_table(out_filename, results):
+    with open(out_filename, "w") as out_fhandle:
+        for line in results:
+            out_fhandle.write("\t".join(map(str, line)) + "\n")
+
+def write_means(file_or_directory_name, results_means):
+    out_filename_means = os.path.join(file_or_directory_name, "read_out_results_means.dat")
+    logger.info("Writing results for mean particle numbers to file " + str(out_filename_means))
+    write_table(out_filename_means, results_means)
+
+def write_timestamps(file_or_directory_name, results_timestamps):
+    out_filename_timestamps = os.path.join(file_or_directory_name, "read_out_results_timestamps.dat")
+    logger.info("Writing results for timestamps to file " + str(out_filename_timestamps))
+    write_table(out_filename_timestamps, results_timestamps)
+
+def write_hdf5(file_or_directory_name, results_means, results_timestamps):
+    out_filename_hdf5 = os.path.join(file_or_directory_name, "read_out_results.hdf5")
+    import tables
+    logger.info("Opening HDF5 table " + out_filename_hdf5)
+    out_file = tables.openFile(out_filename_hdf5, mode="w", title="Read out for dir " + file_or_directory_name)
+    out_data_filter = tables.Filters(complevel=9, complib="bzip2", shuffle=True, fletcher32=True)
+
+    measurements_group = out_file.createGroup("/", "measurements", "Aggregated result data")
+    timestamp_table = out_file.createTable(measurements_group, 'timestamp', hdf5_types.Timestamp, "Timestamps for all modfactors", filters=out_data_filter)
+    averages_table = out_file.createTable(measurements_group, 'average', hdf5_types.ParticleNumberEstimation, "Estimations for the average number of particles", filters=out_data_filter)
+
+    average = averages_table.row
+    for line in results_means:
+        average["modfactor"], average["mu"], average["avN"] = line
+        average.append()
+
+    timestamp = timestamp_table.row
+    for line in results_timestamps:
+        timestamp["modfactor"], timestamp["timestamp"] = line
+        timestamp.append()
+
+    out_file.close()
+    logger.info("Saved HDF5 table " + out_filename_hdf5)
+
+def extract_data(file_or_directory_name, lambda_correction = 0., mu_values = np.arange(-4., 4., 1.), hdf5=False):
     if os.path.isfile(file_or_directory_name):
         dir_mode = False
         all_modfac_files = [file_or_directory_name]
@@ -75,7 +116,9 @@ def extract_data(file_or_directory_name, lambda_correction = 0., mu_values = np.
     for filename in all_modfac_files:
         parameters = parse_filename(filename)
         modfactor = parameters['modfactor']
+        modfactor = float(modfactor)
         timestamp = parameters['timestamp']
+        timestamp = int(timestamp)
         results_timestamps.append((modfactor, timestamp))
         
         logger.info("Processing entry t=" + str(timestamp) + " , m=" + str(modfactor))
@@ -83,18 +126,11 @@ def extract_data(file_or_directory_name, lambda_correction = 0., mu_values = np.
         for mu, mean in calc_means(data, mu_values = mu_values):
             results_means.append((modfactor, mu, mean))
 
-    if dir_mode:
-        out_filename_means = os.path.join(file_or_directory_name, "read_out_results_means.dat")
-        logger.info("Writing results for mean particle numbers to file " + str(out_filename_means))
-        with open(out_filename_means, "w") as out_fhandle:
-            for line in results_means:
-                out_fhandle.write("\t".join(map(str, line)) + "\n")
-
-        out_filename_timestamps = os.path.join(file_or_directory_name, "read_out_results_timestamps.dat")
-        logger.info("Writing results for timestamps to file " + str(out_filename_timestamps))
-        with open(out_filename_timestamps, "w") as out_fhandle:
-            for line in results_timestamps:
-                out_fhandle.write("\t".join(map(str, line)) + "\n")
+    if dir_mode and not hdf5:
+        write_means(file_or_directory_name, results_means)
+        write_timestamps(file_or_directory_name, results_timestamps)
+    elif dir_mode and hdf5:
+        write_hdf5(file_or_directory_name, results_means[1:], results_timestamps[1:])
     else:
         logger.info("Single file mode not supported ATM.")
 
@@ -111,6 +147,8 @@ def process_cmdline(argv = None):
     parser.add_option('--mu-min', action='store', dest='mu_min', type="float", default=-4., help="Minimal mu value")
     parser.add_option('--mu-max', action='store', dest='mu_max', type="float", default=4., help="Maximal mu value - not included")
     parser.add_option('--mu-step', action='store', dest='mu_step', type="float", default=1., help="Step size between mu values")
+    parser.add_option('--hdf5', action='store_true', dest='hdf5', help="Output in HDF5 format. Default is CSV.")
+    parser.add_option('--csv', action='store_false', dest='hdf5', help="Output in CSV format. Default.")
   
     settings, args = parser.parse_args(argv)
     return settings, args
@@ -128,7 +166,7 @@ def main(argv = None):
     out_files_or_dirs = args
     for out_file_or_dir in out_files_or_dirs:
         logger.info("Beginning processing of " + str(out_file_or_dir))
-        extract_data(out_file_or_dir, lambda_correction = thermal_wavelength_exponent_correction, mu_values = mu_values)
+        extract_data(out_file_or_dir, lambda_correction=thermal_wavelength_exponent_correction, mu_values=mu_values, hdf5=settings.hdf5)
     
     return 0
 
