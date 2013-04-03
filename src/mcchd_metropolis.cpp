@@ -80,6 +80,7 @@ void init_logging()
 			      << "> " << boost::log::expressions::message);
   
   boost::log::add_file_log (boost::log::keywords::file_name = (output_directory + std::string("/protocol.log")).c_str(), 
+			    boost::log::keywords::auto_flush = true,
 			    boost::log::keywords::format = boost::log::expressions::stream
 			    << boost::log::expressions::format_date_time< boost::posix_time::ptime >("TimeStamp", "%Y-%m-%d %H:%M:%S.%f")
 			    << " [" << boost::log::expressions::attr< unsigned int >("LineID")
