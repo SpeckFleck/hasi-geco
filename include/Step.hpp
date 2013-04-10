@@ -25,6 +25,8 @@
 
 namespace mcchd
 {
+
+  const double move_probability = 1./3.;
   template<class HardDiscSpace>
   class Step {
   private:
@@ -43,6 +45,7 @@ namespace mcchd
     energy_type delta_E() const;
     bool is_executable() const;
     bool is_remove_step() const;
+    // move_step?
     void execute();
     disc_id_type get_removal_idx() const;
     Point get_insert_coors() const;
