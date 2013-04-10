@@ -3,7 +3,7 @@
 
 import tables
 
-class ParticleNumberEstimation(tables.IsDescription):
+class ParticleNumberConvergence(tables.IsDescription):
     modfactor = tables.FloatCol()
     mu = tables.FloatCol()
     avN = tables.FloatCol()
@@ -11,6 +11,15 @@ class ParticleNumberEstimation(tables.IsDescription):
 class Timestamp(tables.IsDescription):
     modfactor = tables.FloatCol()
     timestamp = tables.UInt64Col()
+
+class ParticleNumberEstimation(tables.IsDescription):
+    mu = tables.FloatCol()
+    avN = tables.FloatCol()
+
+class DensityOfStates(tables.IsDescription):
+    N = tables.UInt64Col()
+    S = tables.FloatCol()
+
 
 if __name__ == "__main__":
     pass

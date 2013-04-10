@@ -20,7 +20,37 @@ mp.mp.dps = 1000
 
 sphere_volume = 4./3. * np.pi * 0.5**3
 
-modfac_file_pattern = re.compile(r"modfac_entropy_dump,(?P<date>[0-9]{8}-[0-9]{6}),mod=(?P<modfac>[0-9.e-]+)$")
+dirname_pattern = re.compile(r"""# example: mcchd_wl_bulk_1.0.1_ciphon,x1.8e+01,y1.8e+01,z1.8e+01,S300,f9.0e-01,m1.0e-20,s1.0e-01,M9.5e-01,E4400,N1.0e+07_0
+                                   (?P<progname>[^,/]+),             # program name
+                                  x(?P<width>[+0-9.Ee-]+),          # system width x
+                                  y(?P<height>[+0-9.Ee-]+),         # system height y
+                                  z(?P<depth>[+0-9.Ee-]+),          # system depth z
+                                  S(?P<seed>[0-9]+),                # RNG seed
+                                  f(?P<flatness>[+0-9.Ee-]+),       # flatness criterion
+                                  m(?P<mod_final>[+0-9.Ee-]+),      # final modfactor
+                                  s(?P<mod_start>[+0-9.Ee-]+),      # start modfactor
+                                  M(?P<mod_multi>[+0-9.Ee-]+),      # modfactor refinement multiplier
+                                  E(?P<energy_limit>[+0-9.Ee-]+),   # energy limit
+                                  N(?P<sweep_steps>[+0-9.Ee-]+)     # number of steps between sweeps
+                                  _(?P<run>[0-9]+)                  # run number""", re.VERBOSE)
+DIRNAME_IDENTIFIERS = [("progname", str),
+                       ("width", float),
+                       ("height", float),
+                       ("depth", float),
+                       ("seed", int),
+                       ("flatness", float),
+                       ("mod_final", float),
+                       ("mod_start", float),
+                       ("mod_multi", float),
+                       ("energy_limit", float),
+                       ("sweep_steps", float),
+                       ("run", int)]
+
+modfac_file_pattern = re.compile(r"""# example: mcchd_wl_bulk_1.0.1_ciphon,x1.8e+01,y1.8e+01,z1.8e+01,S300,f9.0e-01,m1.0e-20,s1.0e-01,M9.5e-01,E4400,N1.0e+07_0/modfac_entropy_dump,20130404-030507,mod=1.101831e-02
+                                       modfac_entropy_dump,            # file specifier, ignored
+                                       (?P<date>[0-9]{8}-[0-9]{6}),    # date string
+                                   mod=(?P<modfac>[+0-9.Ee-]+)         # modfactor
+                                       $                               # EOL""", re.VERBOSE)
 
 def parse_filename(filename):
     filename_matcher = modfac_file_pattern.search(filename)
@@ -31,6 +61,13 @@ def parse_filename(filename):
     date = time.mktime(date.timetuple())
     date = int(date)
     return {'modfactor': modfactor, 'timestamp': date}
+
+def parse_dirname(dirname):
+    dirname_matcher = dirname_pattern.search(dirname)
+    parameters = {}
+    for identifier, converter in DIRNAME_IDENTIFIERS:
+        parameters[identifier] = converter(dirname_matcher.group(identifier))
+    return parameters
 
 def mp_average(data, log_weights):
     total = mp.mpf(0.)
@@ -69,7 +106,7 @@ def write_timestamps(file_or_directory_name, results_timestamps):
     logger.info("Writing results for timestamps to file " + str(out_filename_timestamps))
     write_table(out_filename_timestamps, results_timestamps)
 
-def write_hdf5(file_or_directory_name, results_means, results_timestamps):
+def write_hdf5(file_or_directory_name, results_means, results_timestamps, best_estimate, best_estimate_means, parameters):
     out_filename_hdf5 = os.path.join(file_or_directory_name, "read_out_results.hdf5")
     import tables
     logger.info("Opening HDF5 table " + out_filename_hdf5)
@@ -77,10 +114,15 @@ def write_hdf5(file_or_directory_name, results_means, results_timestamps):
     out_data_filter = tables.Filters(complevel=9, complib="bzip2", shuffle=True, fletcher32=True)
 
     measurements_group = out_file.createGroup("/", "measurements", "Aggregated result data")
-    timestamp_table = out_file.createTable(measurements_group, 'timestamp', hdf5_types.Timestamp, "Timestamps for all modfactors", filters=out_data_filter)
-    averages_table = out_file.createTable(measurements_group, 'average', hdf5_types.ParticleNumberEstimation, "Estimations for the average number of particles", filters=out_data_filter)
+    for identifier, value in parameters.iteritems():
+        setattr(measurements_group._v_attrs, identifier, value)
 
-    average = averages_table.row
+    timestamp_table = out_file.createTable(measurements_group, 'timestamp', hdf5_types.Timestamp, "Timestamps for all modfactors", filters=out_data_filter)
+    convergence_table = out_file.createTable(measurements_group, 'average', hdf5_types.ParticleNumberConvergence, "Estimations for the average number of particles, convergence behaviour for all estimates", filters=out_data_filter)
+    best_estimate_dos_table = out_file.createTable(measurements_group, 'best_dos', hdf5_types.DensityOfStates, "Density of States for the best estimate", filters = out_data_filter)
+    best_estimate_averages_table = out_file.createTable(measurements_group, 'best_average', hdf5_types.ParticleNumberEstimation, "Estimation for the average number of particles of the best estimate", filters = out_data_filter)
+
+    average = convergence_table.row
     for line in results_means:
         average["modfactor"], average["mu"], average["avN"] = line
         average.append()
@@ -90,10 +132,20 @@ def write_hdf5(file_or_directory_name, results_means, results_timestamps):
         timestamp["modfactor"], timestamp["timestamp"] = line
         timestamp.append()
 
+    density = best_estimate_dos_table.row
+    for line in best_estimate:
+        density["N"], density["S"] = line
+        density.append()
+
+    average = best_estimate_averages_table.row
+    for line in best_estimate_means:
+        average["mu"], average["avN"] = line
+        average.append()
+
     out_file.close()
     logger.info("Saved HDF5 table " + out_filename_hdf5)
 
-def extract_data(file_or_directory_name, lambda_correction = 0., mu_values = np.arange(-4., 4., 1.), hdf5=False):
+def extract_data(file_or_directory_name, lambda_correction = 0., mu_values = np.arange(-4., 4., 1.), mu_values_convergence = np.linspace(-4., 4., 5), hdf5 = False):
     if os.path.isfile(file_or_directory_name):
         dir_mode = False
         all_modfac_files = [file_or_directory_name]
@@ -108,11 +160,11 @@ def extract_data(file_or_directory_name, lambda_correction = 0., mu_values = np.
 
     # parse directory name for parameters?
     # put parameters into files?
+
+    dos_dtype = np.dtype([('n', 'i4'), ('S', 'f8')])
     
     results_means = []
-    results_means.append(["# modfactor", "mu", "avN"])
     results_timestamps = []
-    results_timestamps.append(["# modfactor", "timestamp"])
     for filename in all_modfac_files:
         parameters = parse_filename(filename)
         modfactor = parameters['modfactor']
@@ -122,15 +174,25 @@ def extract_data(file_or_directory_name, lambda_correction = 0., mu_values = np.
         results_timestamps.append((modfactor, timestamp))
         
         logger.info("Processing entry t=" + str(timestamp) + " , m=" + str(modfactor))
-        data = np.loadtxt(filename, dtype=[('n', 'i4'), ('S', 'f8')])
-        for mu, mean in calc_means(data, mu_values = mu_values):
+        data = np.loadtxt(filename, dtype=dos_dtype)
+        for mu, mean in calc_means(data, mu_values = mu_values_convergence):
             results_means.append((modfactor, mu, mean))
 
     if dir_mode and not hdf5:
+        results_means.insert(0, ["# modfactor", "mu", "avN"])
         write_means(file_or_directory_name, results_means)
+        results_timestamps.insert(0, ["# modfactor", "timestamp"])
         write_timestamps(file_or_directory_name, results_timestamps)
     elif dir_mode and hdf5:
-        write_hdf5(file_or_directory_name, results_means[1:], results_timestamps[1:])
+        best_estimate_filename = all_modfac_files[-1]
+        
+        best_estimate = np.loadtxt(best_estimate_filename, dtype=dos_dtype)
+        best_estimate_means = calc_means(best_estimate, mu_values = mu_values)
+        best_estimate_means = np.array(best_estimate_means, dtype=[('mu', 'f8'), ('avN', 'f8')])
+
+        parameters = parse_dirname(file_or_directory_name)
+
+        write_hdf5(file_or_directory_name, results_means, results_timestamps, best_estimate, best_estimate_means, parameters)
     else:
         logger.info("Single file mode not supported ATM.")
 
@@ -147,6 +209,7 @@ def process_cmdline(argv = None):
     parser.add_option('--mu-min', action='store', dest='mu_min', type="float", default=-4., help="Minimal mu value")
     parser.add_option('--mu-max', action='store', dest='mu_max', type="float", default=4., help="Maximal mu value - not included")
     parser.add_option('--mu-step', action='store', dest='mu_step', type="float", default=1., help="Step size between mu values")
+    parser.add_option('--num-mu-convergence', action='store', dest='num_mu_convergence', type="int", default=5, help="Number of mu values for which complete convergence analysis is calculated")
     parser.add_option('--hdf5', action='store_true', dest='hdf5', help="Output in HDF5 format. Default is CSV.")
     parser.add_option('--csv', action='store_false', dest='hdf5', help="Output in CSV format. Default.")
   
@@ -162,11 +225,16 @@ def main(argv = None):
     thermal_wavelength_exponent_correction = np.log(thermal_wavelength_calculated) - np.log(thermal_wavelength_for_comparison)
 
     mu_values = np.arange(settings.mu_min, settings.mu_max, settings.mu_step)
+    mu_values_convergence = np.linspace(settings.mu_min, settings.mu_max, settings.num_mu_convergence)
 
     out_files_or_dirs = args
     for out_file_or_dir in out_files_or_dirs:
         logger.info("Beginning processing of " + str(out_file_or_dir))
-        extract_data(out_file_or_dir, lambda_correction=thermal_wavelength_exponent_correction, mu_values=mu_values, hdf5=settings.hdf5)
+        extract_data(out_file_or_dir,
+                     lambda_correction=thermal_wavelength_exponent_correction,
+                     mu_values=mu_values,
+                     mu_values_convergence=mu_values_convergence,
+                     hdf5=settings.hdf5)
     
     return 0
 
