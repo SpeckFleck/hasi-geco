@@ -17,20 +17,25 @@ namespace mcchd {
   typedef boost::array<double, 3> coordinate_type;
 
   class Point_3d {
+    friend std::ostream& operator<< (std::ostream&, const Point_3d&);
   private:
     coordinate_type coors;
   public:
     Point_3d();
     template <class RandomNumberGenerator> Point_3d(RandomNumberGenerator*, const coordinate_type&); // random point in container
+    template <class RandomNumberGenerator> Point_3d(RandomNumberGenerator*, const double&); // random displacement
     Point_3d(const double&, const double&, const double&);
     Point_3d(const coordinate_type&);
     ~Point_3d();
     double get_coor(const uint8_t&) const;
     void set_coor(const uint8_t&, const double&);
+    void rebase_periodic(const coordinate_type&);
     double absolute() const;
     double distance(const Point_3d&) const;
     double distance(const Point_3d&, const coordinate_type&) const;
+    Point_3d operator-() const;
     Point_3d operator-(const Point_3d&) const;
+    Point_3d operator+(const Point_3d&) const;
     bool operator==(const Point_3d&) const;
     bool operator!=(const Point_3d&) const;
   };

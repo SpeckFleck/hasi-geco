@@ -59,9 +59,11 @@ namespace mcchd {
     energy_type energy() const;
     const time_type& get_simulation_time() const;
     const double& get_volume() const;
+    bool is_overlapping_after_displacement(const disc_id_type&, const Point&);
     bool is_overlapping(const Disc&);
     template <class RandomNumberGenerator> Step<HardDiscs<CollisionFunctor, LookupTable> > propose_step(RandomNumberGenerator*);
     void commit(Step<HardDiscs<CollisionFunctor, LookupTable> >&);
+    void move_disc(const disc_id_type&, const Point&);
     void remove_disc(const disc_id_type&);
     void insert_disc(const Point&);
 

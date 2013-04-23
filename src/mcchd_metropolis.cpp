@@ -264,7 +264,6 @@ void run_simulation(boost_po::variables_map& option_arguments, std::string& prog
   log_percentages.push_back(0.075);
   log_percentages.push_back(0.1);
   log_percentages.push_back(0.15);
-  log_percentages.push_back(0.15);
   log_percentages.push_back(0.2);
   log_percentages.push_back(0.25);
   log_percentages.push_back(0.3);
