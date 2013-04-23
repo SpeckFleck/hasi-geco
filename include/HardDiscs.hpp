@@ -45,6 +45,7 @@ namespace mcchd {
     DiscCollection all_discs; 
     disc_id_type num_present;
     LookupTable disc_table;
+    DiscVec neighbouring_discs;
     coordinate_type extents;
     double volume;
     time_type simulation_time;

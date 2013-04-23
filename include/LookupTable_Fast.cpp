@@ -62,7 +62,14 @@ namespace mcchd {
   inline DiscVec LookupTable_Fast::get_neighbouring_discs(const Point& around_point) const
   {
     DiscVec neighbouring_discs;
+    get_neighbouring_discs(around_point, neighbouring_discs);
+    return neighbouring_discs;
+  }
 
+  inline void LookupTable_Fast::get_neighbouring_discs(const Point& around_point, DiscVec& neighbouring_discs) const
+  {
+    neighbouring_discs.clear();
+    
     multi_index_type multi_idx = get_cell_idx(around_point);
     // using -2:2 is fuddled, for x_max < 4 it should be -3:3 to avoid collisions
     // make check at initializtion? change correspondingly?
@@ -84,8 +91,6 @@ namespace mcchd {
 	      }	    
 	  }
       }
-
-    return neighbouring_discs;
   }
 
   inline void LookupTable_Fast::remove_disc(Disc* const disc_to_be_removed)
