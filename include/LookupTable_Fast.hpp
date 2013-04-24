@@ -37,6 +37,7 @@ namespace mcchd {
     LookupTable_Fast(const coordinate_type&);
     ~LookupTable_Fast();
     DiscVec get_neighbouring_discs(const Point&) const;
+    void get_neighbouring_discs(const Point&, DiscVec&) const;
     void remove_disc(Disc* const);
     void insert_disc(Disc* const);
   };

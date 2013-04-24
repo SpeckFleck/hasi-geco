@@ -13,20 +13,31 @@
 
 namespace mcchd
 {
-  /// insert disc constructor
+  /// move disc constructor
   template <class HardDiscSpace>
-  Step<HardDiscSpace>::Step(HardDiscSpace* const configuration, const Point& place_here) : hard_disc_configuration_space(configuration)
+  Step<HardDiscSpace>::Step(HardDiscSpace* const configuration, const disc_id_type& disc_idx, const Point& displacement) : hard_disc_configuration_space(configuration)
   {
-    is_remove = false;
-    target_coor = place_here;
+    is_move = true;
+    to_be_removed = disc_idx;
+    target_coor = displacement;
   }
 
   /// remove disc constructor
   template <class HardDiscSpace>
   Step<HardDiscSpace>::Step(HardDiscSpace* const configuration, const disc_id_type& disc_idx) : hard_disc_configuration_space(configuration)
   {
+    is_move = false;
     is_remove = true;
     to_be_removed = disc_idx;
+  }
+
+  /// insert disc constructor
+  template <class HardDiscSpace>
+  Step<HardDiscSpace>::Step(HardDiscSpace* const configuration, const Point& place_here) : hard_disc_configuration_space(configuration)
+  {
+    is_move = false;
+    is_remove = false;
+    target_coor = place_here;
   }
 
   template <class HardDiscSpace>
@@ -43,7 +54,9 @@ namespace mcchd
   template <class HardDiscSpace>
   int Step<HardDiscSpace>::delta_E() const
   {
-    if (is_remove)
+    if (is_move)
+      return 0;
+    else if (is_remove)
       return -1;
     else
       return 1;
@@ -52,10 +65,18 @@ namespace mcchd
   template <class HardDiscSpace>
   bool Step<HardDiscSpace>::is_executable() const
   {
+    if (is_move)
+      return (hard_disc_configuration_space->get_number_of_discs() > 0) && (! hard_disc_configuration_space->is_overlapping_after_displacement(to_be_removed, target_coor));
     if (is_remove)
       return hard_disc_configuration_space->get_number_of_discs() > 0;
     else
-      return (! hard_disc_configuration_space->is_overlapping(Disc(target_coor, 1)));
+      return (! hard_disc_configuration_space->is_overlapping(Disc(target_coor, -1))); // -1 is unused test disc id
+  }
+
+  template <class HardDiscSpace>
+  bool Step<HardDiscSpace>::is_move_step() const
+  {
+    return is_move;
   }
 
   template <class HardDiscSpace>
@@ -91,6 +112,8 @@ namespace mcchd
     const double thermal_wavelength_pow_3 = sphere_volume;
     const double pre_factor_VL3 = volume / thermal_wavelength_pow_3;
 
+    if (is_move)
+      return 1.;
     if (is_remove)
       return pre_factor_VL3 / num_discs;
     else
