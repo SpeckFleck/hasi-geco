@@ -74,16 +74,46 @@ namespace mcchd {
     // using -2:2 is fuddled, for x_max < 4 it should be -3:3 to avoid collisions
     // make check at initializtion? change correspondingly?
     const int cell_range = 2;
+    const int max_cells = 2 * cell_range + 1;
+    boost::array<index_type, max_cells> i_idces, j_idces, k_idces;
+    
+    int cell = 0;
     for (int i = -cell_range; i <= cell_range; i++)
       {
-	const index_type i_idx = (multi_idx[0] + num_cells[0] + i) % num_cells[0];
-	for (int j = -cell_range; j <= cell_range; j++)
+	const index_type pre_i_idx = (multi_idx[0] + i);
+	const index_type i_idx = pre_i_idx < 0 ? pre_i_idx + num_cells[0] : pre_i_idx >= num_cells[0] ? pre_i_idx - num_cells[0] : pre_i_idx;
+	i_idces[cell] = i_idx;
+	cell++;
+      }
+
+    cell = 0;
+    for (int j = -cell_range; j <= cell_range; j++)
+      {
+	const index_type pre_j_idx = (multi_idx[1] + j);
+	const index_type j_idx = pre_j_idx < 0 ? pre_j_idx + num_cells[1] : pre_j_idx >= num_cells[1] ? pre_j_idx - num_cells[1] : pre_j_idx;
+	j_idces[cell] = j_idx;
+	cell++;
+      }
+
+    cell = 0;
+    for (int k = -cell_range; k <= cell_range; k++)
+      {
+	const index_type pre_k_idx = (multi_idx[2] + k);
+	const index_type k_idx = pre_k_idx < 0 ? pre_k_idx + num_cells[2] : pre_k_idx >= num_cells[2] ? pre_k_idx - num_cells[2] : pre_k_idx;
+	k_idces[cell] = k_idx;
+	cell++;
+      }
+
+    for (int i = 0; i < max_cells; i++)
+      {
+	const index_type i_idx = i_idces[i];
+	for (int j = 0; j < max_cells; j++)
 	  {
-	    const index_type j_idx = (multi_idx[1] + num_cells[1] + j) % num_cells[1];
-	    for (int k = -cell_range; k <= cell_range; k++)
+	    const index_type j_idx = j_idces[j];
+	    for (int k = 0; k < max_cells; k++)
 	      {
-		const index_type k_idx = (multi_idx[2] + num_cells[2] + k) % num_cells[2];
-		
+		const index_type k_idx = k_idces[k];
+
 		const Disc* found_disc = ((*space_cells)[i_idx][j_idx][k_idx]);
 		
  		if (found_disc != NULL)

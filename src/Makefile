@@ -4,7 +4,7 @@ CXX = g++
 MOCASINNS_ROOT = ../../mocasinns
 MOCASINNS_INCLUDE =  -I$(MOCASINNS_ROOT)/libmocasinns/include
 
-CFLAGS_DEBUG = #-ggdb3 -pg
+CFLAGS_DEBUG = #-ggdb3 -pg --coverage
 CFLAGS_PREFERENCES = -std=gnu++0x -mfpmath=sse
 CFLAGS_OPTIMIZATION = -O3 -march=native
 CFLAGS_WARNINGS = -Wall -Wextra -pedantic
