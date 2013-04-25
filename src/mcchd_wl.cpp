@@ -95,26 +95,30 @@ void init_logging()
   BOOST_LOG_TRIVIAL(info) << "Logging facilities successfully initialized.";
 }
 
-void write_dos_to_file(std::string output_file, HistogramType& entropy_estimation)
+void write_dos_to_file(std::string output_filename, HistogramType& entropy_estimation)
 {
-  if (boost_fs::exists(output_file))
+  if (boost_fs::exists(output_filename))
     {
-      BOOST_LOG_TRIVIAL(error) << "File " << output_file << " already exists. Only one user request per second at max please.";
+      BOOST_LOG_TRIVIAL(error) << "File " << output_filename << " already exists. Only one user request per second at max please.";
     }
   else
     {
       std::ofstream *output_fstream = new std::ofstream;
-      output_fstream->open(output_file.c_str());
+      output_fstream->open(output_filename.c_str());
       
       if (!(*output_fstream)) // Is output_fstream OK?
 	{
 	  throw 5;
 	}
       
+      (*output_fstream) << "# E: Energy" << std::endl;
+      (*output_fstream) << "# S: Entropy" << std::endl;
+      (*output_fstream) << "# E S" << std::endl;
+      
       (*output_fstream) << std::scientific << std::setprecision(std::numeric_limits<double>::digits10 + 1);
       (*output_fstream) << entropy_estimation << std::endl;
       delete output_fstream;
-      BOOST_LOG_TRIVIAL(info) << "Wrote entropy estimate to " << output_file;
+      BOOST_LOG_TRIVIAL(info) << "Wrote entropy estimate to " << output_filename;
     }
 }
 
