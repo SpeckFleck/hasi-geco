@@ -46,6 +46,10 @@
 namespace boost_po = boost::program_options;
 namespace boost_fs = boost::filesystem;
 
+#ifndef __MCCHD_VERSION
+#define __MCCHD_VERSION "_unspecified version_"
+#endif
+
 #ifndef CONTAINER_NAME
 #define CONTAINER_NAME Bulk
 #endif
@@ -184,6 +188,7 @@ int main(int argc, char* argv[])
       boost_po::options_description option_desc("Available options");
       option_desc.add_options()
         ("help,h", "Prints this message.")
+        ("version,v", "Prints version information.")
         ("width,w,x", boost_po::value<double>()->default_value(10.), "Width of the Box - x coordinate.")
         ("height,h,y", boost_po::value<double>()->default_value(10.), "Height of the Box - y coordinate.")
         ("depth,d,z", boost_po::value<double>()->default_value(10.), "Depth of the Box - z coordinate.")
@@ -208,6 +213,12 @@ int main(int argc, char* argv[])
 	  std::cerr << option_desc;
           return 0;
         }
+      else if (option_arguments.count("version"))
+	{
+	  std::cerr << "This is mcchd_wl version " << __MCCHD_VERSION << std::endl;
+	  std::cerr << "Copyleft 2013 Johannes F Knauf." << std::endl;
+	  return 0;
+	}
       
       std::string program_name = std::string(argv[0]);
 
