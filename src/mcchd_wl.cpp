@@ -195,6 +195,7 @@ int main(int argc, char* argv[])
         ("energy_limit,E", boost_po::value<uint64_t>(), "Set energy limit. No limit, if parameter is missing.")
         ("output_directory,o", boost_po::value<std::string>(), "Directory for the output of results, progress reports etc.")
         ("sweep_steps,N", boost_po::value<double>()->default_value(1e4), "How many steps between 2 flatness checks and corresponding status reports etc.")
+	("logdos_file,i", boost_po::value<std::string>(), "Input CSV file containing the initial entropy estimation.")
         ;
       
       boost_po::variables_map option_arguments;
@@ -274,12 +275,12 @@ void run_simulation(boost_po::variables_map& option_arguments, std::string& prog
   output_directory = (output_directory_formatter % trial_number).str();
   while(boost_fs::exists(output_directory.c_str()))
     {
-      BOOST_LOG_TRIVIAL(debug) << "Proposed output directory " << output_directory.c_str() << " already exists. Trying next suffix number." << std::endl;
+      BOOST_LOG_TRIVIAL(debug) << "Proposed output directory " << output_directory.c_str() << " already exists. Trying next suffix number.";
       trial_number += 1;
       output_directory = (output_directory_formatter % trial_number).str();
     }
   boost_fs::create_directory(output_directory.c_str());
-  BOOST_LOG_TRIVIAL(debug) << "Created output directory " << output_directory.c_str() << std::endl;
+  BOOST_LOG_TRIVIAL(debug) << "Created output directory " << output_directory.c_str();
 
   init_logging();
 
@@ -306,6 +307,15 @@ void run_simulation(boost_po::variables_map& option_arguments, std::string& prog
   wang_landau_simulation->signal_handler_sigterm.connect(handle_sig_term);
   wang_landau_simulation->signal_handler_sweep.connect(sweep_handler);
   wang_landau_simulation->signal_handler_modfac_change.connect(modfac_handler);
+
+  HistogramType entropy_estimation;
+  if (option_arguments.count("logdos_file"))
+    {
+      std::string filename = option_arguments["logdos_file"].as<std::string>();
+      BOOST_LOG_TRIVIAL(info) << "Log DOS file option present. Loading file " << filename.c_str();
+      entropy_estimation.load_csv(filename.c_str());
+      wang_landau_simulation->set_density_of_states(entropy_estimation);
+    }
 
   // run
   wang_landau_simulation->do_wang_landau_simulation();
