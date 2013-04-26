@@ -34,7 +34,7 @@ def get_logdos_estimate(V_box, eta_max):
         S = S_prev + log_V_free - log_thermal_wavelength_pow3 - np.log(N)
         logdos.append((N, S))
     logdos = np.array(logdos, dtype=[("N", "i4"), ("S", "f8")])
-    np.savetxt(sys.stdout, logdos)
+    np.savetxt(sys.stdout, logdos, fmt=["%d", "%.10g"])
 
 def process_cmdline(argv):
     """Return 2-tuple of a settings object and an argument list.
