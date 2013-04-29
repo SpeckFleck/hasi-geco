@@ -12,7 +12,8 @@ THERMAL_WAVELENGHT_POW3 = SPHERE_VOLUME
 log_thermal_wavelength_pow3 = np.log(THERMAL_WAVELENGHT_POW3)
 
 # fitted heuristically
-V_free_polycoeffs = np.array([3.82096924e+02, 6.21187256e+03, -7.71055722e+03, 3.33799588e+03, -7.51297200e+02, 5.07092032e+01, -1.85825727e+01, -7.94670516e+00, -1.26357161e-04])
+V_free_polycoeffs = np.array([-3.26425302e+04, 4.61678071e+04, -2.65367603e+04, 7.74554070e+03, -1.28632784e+03, 8.25299685e+01, -1.94553809e+01, -7.94133864e+00, -4.98107770e-04])
+
 
 def get_V_free_estimate(density):
     """Return estimate for free volume fraction"""
