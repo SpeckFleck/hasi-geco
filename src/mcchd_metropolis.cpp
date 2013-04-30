@@ -105,12 +105,12 @@ void append_value_to_file(std::string output_file, energy_type energy)
   delete output_fstream;
 }
 
-void handle_sig_usr1(ParentSimulationType* parent_simulation)
+void handle_sig_usr1(ParentSimulationType*)
 {
   BOOST_LOG_TRIVIAL(debug) << "Caught SIGUSR1. No action defined.";
 }
 
-void handle_sig_usr2(ParentSimulationType* parent_simulation)
+void handle_sig_usr2(ParentSimulationType*)
 {
   BOOST_LOG_TRIVIAL(debug) << "Caught SIGUSR2. No action defined.";
 }
