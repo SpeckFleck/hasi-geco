@@ -126,7 +126,7 @@ void handle_sig_usr1(ParentSimulationType* parent_simulation)
 {
   BOOST_LOG_TRIVIAL(debug) << "Caught SIGUSR1. Writing a snapshot of the entropy estimation";
   SimulationType* wang_landau_simulation = static_cast<SimulationType*> (parent_simulation);
-  HistogramType entropy_estimation = wang_landau_simulation->get_density_of_states();
+  HistogramType entropy_estimation = wang_landau_simulation->get_log_density_of_states();
   // normalize histogram before output
   entropy_estimation.shift_bin_zero(entropy_estimation.min_x_value());
 
@@ -168,17 +168,17 @@ void modfac_handler(ParentSimulationType* parent_simulation)
 {
   SimulationType* wang_landau_simulation = static_cast<SimulationType*> (parent_simulation);
   const double current_modification_factor = wang_landau_simulation->get_modification_factor_current();
-  HistogramType density_of_states = wang_landau_simulation->get_density_of_states();
+  HistogramType log_density_of_states = wang_landau_simulation->get_log_density_of_states();
 
   // normalize histogram before output
-  density_of_states.shift_bin_zero(density_of_states.min_x_value());
+  log_density_of_states.shift_bin_zero(log_density_of_states.min_x_value());
 
   const time_t current_time = time (NULL);
   char world_time[16];
   strftime (world_time, 16, "%Y%m%d-%H%M%S", gmtime(&current_time));
   std::string output_file = output_directory + "/modfac_entropy_dump," + world_time + ",mod=" + (boost::format("%e") % current_modification_factor).str();
 
-  write_dos_to_file(output_file, density_of_states);
+  write_dos_to_file(output_file, log_density_of_states);
 }
 
 // declaration of the main simulation routine -- defined below
@@ -201,7 +201,8 @@ int main(int argc, char* argv[])
         ("mod_final,m", boost_po::value<double>()->default_value(1e-2), "Final modification factor.")
         ("mod_start,s", boost_po::value<double>()->default_value(1.0), "Modification factor at beginning of simulation.")
         ("mod_multi,M", boost_po::value<double>()->default_value(0.5), "Modification factor multiplier - gets multiplied whenever flatness is reached.")
-        ("energy_limit,E", boost_po::value<uint64_t>(), "Set energy limit. No limit, if parameter is missing.")
+        ("energy_cutoff_lower,e", boost_po::value<uint64_t>(), "Set lower energy limit E_min. No lower limit, if parameter is missing.")
+        ("energy_cutoff_upper,E", boost_po::value<uint64_t>(), "Set upper energy limit E_max. No upper limit, if parameter is missing.")
         ("output_directory,o", boost_po::value<std::string>(), "Directory for the output of results, progress reports etc.")
         ("sweep_steps,N", boost_po::value<double>()->default_value(1e4), "How many steps between 2 flatness checks and corresponding status reports etc.")
 	("logdos_file,i", boost_po::value<std::string>(), "Input CSV file containing the initial entropy estimation.")
@@ -254,12 +255,20 @@ void run_simulation(boost_po::variables_map& option_arguments, std::string& prog
   const double mod_multi = option_arguments["mod_multi"].as<double>();
   const double sweep_steps = option_arguments["sweep_steps"].as<double>();
 
-  bool energy_limit_use = false;
-  uint64_t energy_limit = 0;
-  if (option_arguments.count("energy_limit"))
+  bool energy_cutoff_upper_use = false;
+  uint64_t energy_cutoff_upper = 0;
+  if (option_arguments.count("energy_cutoff_upper"))
     {
-      energy_limit_use = true;
-      energy_limit = option_arguments["energy_limit"].as<uint64_t>();
+      energy_cutoff_upper_use = true;
+      energy_cutoff_upper = option_arguments["energy_cutoff_upper"].as<uint64_t>();
+    }
+
+  bool energy_cutoff_lower_use = false;
+  uint64_t energy_cutoff_lower = 0;
+  if (option_arguments.count("energy_cutoff_lower"))
+    {
+      energy_cutoff_lower_use = true;
+      energy_cutoff_lower = option_arguments["energy_cutoff_lower"].as<uint64_t>();
     }
 
   BOOST_LOG_TRIVIAL(debug) << "Finished reading simulation options.";
@@ -272,7 +281,7 @@ void run_simulation(boost_po::variables_map& option_arguments, std::string& prog
     }
   else
     {
-      output_directory = (boost::format("%s,x%.1e,y%.1e,z%.1e,S%d,f%.1e,m%.1e,s%.1e,M%.1e,E%d,N%.1e")
+      output_directory = (boost::format("%s,x%.1e,y%.1e,z%.1e,S%d,f%.1e,m%.1e,s%.1e,M%.1e,e%d,E%d,N%.1e")
 			  % program_name.c_str()
 			  % x_max
 			  % y_max
@@ -282,7 +291,8 @@ void run_simulation(boost_po::variables_map& option_arguments, std::string& prog
 			  % mod_final
 			  % mod_start
 			  % mod_multi
-			  % energy_limit
+			  % energy_cutoff_lower
+			  % energy_cutoff_upper
 			  % sweep_steps).str();
     }
   output_directory_formatter = boost::format(output_directory + "_%d");
@@ -302,14 +312,16 @@ void run_simulation(boost_po::variables_map& option_arguments, std::string& prog
   // create simulation objects
   mcchd::coordinate_type extents = {{x_max, y_max, z_max}};
 
-  SimulationType::Parameters<energy_type> wang_landau_parameters;
+  SimulationType::Parameters wang_landau_parameters;
   wang_landau_parameters.modification_factor_initial = mod_start;
   wang_landau_parameters.modification_factor_final = mod_final;
   wang_landau_parameters.modification_factor_multiplier = mod_multi;
   wang_landau_parameters.flatness = flatness;
   wang_landau_parameters.sweep_steps = sweep_steps;
-  wang_landau_parameters.energy_cutoff_use = energy_limit_use;
-  wang_landau_parameters.energy_cutoff = energy_limit;
+  wang_landau_parameters.use_energy_cutoff_upper = energy_cutoff_upper_use;
+  wang_landau_parameters.energy_cutoff_upper = energy_cutoff_upper;
+  wang_landau_parameters.use_energy_cutoff_lower = energy_cutoff_lower_use;
+  wang_landau_parameters.energy_cutoff_lower = energy_cutoff_lower;
 
   ConfigurationType* hard_sphere_configuration = new ConfigurationType(extents);
   SimulationType* wang_landau_simulation = new SimulationType(wang_landau_parameters, hard_sphere_configuration);;
@@ -329,7 +341,7 @@ void run_simulation(boost_po::variables_map& option_arguments, std::string& prog
       std::string filename = option_arguments["logdos_file"].as<std::string>();
       BOOST_LOG_TRIVIAL(info) << "Log DOS file option present. Loading file " << filename.c_str();
       entropy_estimation.load_csv(filename.c_str());
-      wang_landau_simulation->set_density_of_states(entropy_estimation);
+      wang_landau_simulation->set_log_density_of_states(entropy_estimation);
     }
 
   // run
