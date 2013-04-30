@@ -52,7 +52,7 @@ namespace mcchd
   }
 
   template <class HardDiscSpace>
-  int Step<HardDiscSpace>::delta_E() const
+  energy_type Step<HardDiscSpace>::delta_E() const
   {
     if (is_move)
       return 0;

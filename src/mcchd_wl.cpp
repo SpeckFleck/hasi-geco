@@ -38,6 +38,9 @@
 #include <mocasinns/random/boost_random.hpp>
 #include <mocasinns/histograms/histocrete.hpp>
 #include <mocasinns/wang_landau.hpp>
+#include <mocasinns/metropolis.hpp>
+
+#include <mcchd_typedefs.hpp>
 #include <HardDiscs.hpp>
 #include <CollisionFunctor_SingularDefects.hpp>
 #include <CollisionFunctor_NodalSurfaces.hpp>
@@ -61,7 +64,7 @@ namespace boost_fs = boost::filesystem;
 
 
 typedef uint64_t signal_flag_t;
-typedef mcchd::disc_id_type energy_type;
+typedef mcchd::energy_type energy_type;
 typedef Mocasinns::Random::Boost_MT19937 RngType;
 typedef CONTAINER_TYPE ContainerType;
 typedef Mocasinns::Histograms::Histocrete<energy_type, long unsigned int> IncidenceHistogramType;
@@ -69,7 +72,16 @@ typedef Mocasinns::Histograms::Histocrete<energy_type, double> HistogramType;
 typedef mcchd::HardDiscs<ContainerType> ConfigurationType;
 typedef mcchd::Step<ConfigurationType> StepType;
 typedef Mocasinns::Simulation<ConfigurationType, RngType> ParentSimulationType;
+typedef Mocasinns::Metropolis<ConfigurationType, StepType, RngType> PreparationSimulationType;
 typedef Mocasinns::WangLandau<ConfigurationType, StepType, energy_type, Mocasinns::Histograms::Histocrete, RngType> SimulationType;
+
+class EnergyCutoffConflictException: public std::exception
+{
+  virtual const char* what() const throw()
+  {
+    return "E_min > E_max ; this is forbidden.";
+  }
+} energy_cutoff_conflict_exception;
 
 static std::string output_directory;
 
@@ -201,8 +213,8 @@ int main(int argc, char* argv[])
         ("mod_final,m", boost_po::value<double>()->default_value(1e-2), "Final modification factor.")
         ("mod_start,s", boost_po::value<double>()->default_value(1.0), "Modification factor at beginning of simulation.")
         ("mod_multi,M", boost_po::value<double>()->default_value(0.5), "Modification factor multiplier - gets multiplied whenever flatness is reached.")
-        ("energy_cutoff_lower,e", boost_po::value<uint64_t>(), "Set lower energy limit E_min. No lower limit, if parameter is missing.")
-        ("energy_cutoff_upper,E", boost_po::value<uint64_t>(), "Set upper energy limit E_max. No upper limit, if parameter is missing.")
+        ("energy_cutoff_lower,e", boost_po::value<energy_type>(), "Set lower energy limit E_min. No lower limit, if parameter is missing.")
+        ("energy_cutoff_upper,E", boost_po::value<energy_type>(), "Set upper energy limit E_max. No upper limit, if parameter is missing.")
         ("output_directory,o", boost_po::value<std::string>(), "Directory for the output of results, progress reports etc.")
         ("sweep_steps,N", boost_po::value<double>()->default_value(1e4), "How many steps between 2 flatness checks and corresponding status reports etc.")
 	("logdos_file,i", boost_po::value<std::string>(), "Input CSV file containing the initial entropy estimation.")
@@ -231,7 +243,7 @@ int main(int argc, char* argv[])
     }
   catch (std::exception &exceptionX)
     {
-      std::cout << exceptionX.what() << std::endl;
+      std::cerr << exceptionX.what() << std::endl;
       return 1;
     }
 
@@ -256,20 +268,26 @@ void run_simulation(boost_po::variables_map& option_arguments, std::string& prog
   const double sweep_steps = option_arguments["sweep_steps"].as<double>();
 
   bool energy_cutoff_upper_use = false;
-  uint64_t energy_cutoff_upper = 0;
+  energy_type energy_cutoff_upper = 0;
   if (option_arguments.count("energy_cutoff_upper"))
     {
       energy_cutoff_upper_use = true;
-      energy_cutoff_upper = option_arguments["energy_cutoff_upper"].as<uint64_t>();
+      energy_cutoff_upper = option_arguments["energy_cutoff_upper"].as<energy_type>();
     }
 
   bool energy_cutoff_lower_use = false;
-  uint64_t energy_cutoff_lower = 0;
+  energy_type energy_cutoff_lower = 0;
   if (option_arguments.count("energy_cutoff_lower"))
     {
       energy_cutoff_lower_use = true;
-      energy_cutoff_lower = option_arguments["energy_cutoff_lower"].as<uint64_t>();
+      energy_cutoff_lower = option_arguments["energy_cutoff_lower"].as<energy_type>();
     }
+
+  if ((energy_cutoff_lower_use && energy_cutoff_upper_use) && (energy_cutoff_lower > energy_cutoff_upper))
+    {
+      throw energy_cutoff_conflict_exception;
+    }
+
 
   BOOST_LOG_TRIVIAL(debug) << "Finished reading simulation options.";
 
@@ -324,7 +342,20 @@ void run_simulation(boost_po::variables_map& option_arguments, std::string& prog
   wang_landau_parameters.energy_cutoff_lower = energy_cutoff_lower;
 
   ConfigurationType* hard_sphere_configuration = new ConfigurationType(extents);
-  SimulationType* wang_landau_simulation = new SimulationType(wang_landau_parameters, hard_sphere_configuration);;
+
+  if (energy_cutoff_lower_use)
+    {
+      PreparationSimulationType::Parameters preparation_metropolis_parameters;
+      // preparation_metropolis_parameters.relaxation_steps = 0;
+      // preparation_metropolis_parameters.measurement_number = 0;
+      // preparation_metropolis_parameters.steps_between_measurement = 1;
+      PreparationSimulationType* preparation_metropolis_simulation = new PreparationSimulationType(preparation_metropolis_parameters, hard_sphere_configuration);
+      while (hard_sphere_configuration->energy() <= energy_cutoff_lower)
+	{
+	  preparation_metropolis_simulation->do_metropolis_steps(1, -20.); // -beta_mu is heuristically determined
+	}
+    }
+  SimulationType* wang_landau_simulation = new SimulationType(wang_landau_parameters, hard_sphere_configuration);
 
   wang_landau_simulation->set_random_seed(seed);
   
