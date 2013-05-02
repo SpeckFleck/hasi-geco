@@ -6,6 +6,9 @@ import subprocess
 import sys
 import numpy as np
 
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
 HARD_SPHERE_RADIUS = 0.5
 SPHERE_VOLUME = np.pi * pow(HARD_SPHERE_RADIUS, 3) * 4. / 3.
 THERMAL_WAVELENGHT_POW3 = SPHERE_VOLUME
@@ -51,9 +54,10 @@ def process_cmdline(argv):
         add_help_option = None)
 
     parser.add_option('-h', '--help', action='help', help="Show this help message and exit")
-    parser.add_option('-x', '--width', action='store', dest='width', type='float', default=5., help="Specify system width")
-    parser.add_option('-y', '--height', action='store', dest='height', type='float', default=5., help="Specify system height")
-    parser.add_option('-z', '--depth', action='store', dest='depth', type='float', default=5., help="Specify system depth")
+    parser.add_option('-x', '--width', action='store', dest='width', type='float', help="Specify system width")
+    parser.add_option('-y', '--height', action='store', dest='height', type='float', help="Specify system height")
+    parser.add_option('-z', '--depth', action='store', dest='depth', type='float', help="Specify system depth")
+    parser.add_option('-V', '--volume', action='store', dest='volume', type='float', help="Specify system volume -- if present the options xyz do not get respected")
     parser.add_option('-e', '--density_max', action='store', dest='eta_max', type='float', default=0.2, help="Specify maximum particle density for which an estimate should be generated")
 
     settings, args = parser.parse_args(argv)
@@ -63,7 +67,15 @@ def main(argv = None):
     """Main function called in command mode."""
     settings, args = process_cmdline(argv)
 
-    V_box = settings.width * settings.height * settings.depth
+    if settings.volume:
+        logging.info("Got Volume option, xyz options will be ignored.")
+        V_box = settings.volume
+    elif settings.width and settings.height and settings.depth:
+        V_box = settings.width * settings.height * settings.depth
+    else:
+        logging.info("Box volume not unspecified. Use either volume option or xyz options.")
+        return 1
+            
     # code here
     get_logdos_estimate(V_box, settings.eta_max)
 
