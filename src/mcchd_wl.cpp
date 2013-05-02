@@ -352,7 +352,8 @@ void run_simulation(boost_po::variables_map& option_arguments, std::string& prog
       PreparationSimulationType* preparation_metropolis_simulation = new PreparationSimulationType(preparation_metropolis_parameters, hard_sphere_configuration);
       while (hard_sphere_configuration->energy() <= energy_cutoff_lower)
 	{
-	  preparation_metropolis_simulation->do_metropolis_steps(1, -20.); // -beta_mu is heuristically determined
+	  // beta_mu = 1000 : absurdly high value => Insertions are always accepted, translations as well, removals are always rejected
+	  preparation_metropolis_simulation->do_metropolis_steps(1, -1000.); 
 	}
     }
   SimulationType* wang_landau_simulation = new SimulationType(wang_landau_parameters, hard_sphere_configuration);
